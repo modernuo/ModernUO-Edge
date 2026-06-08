@@ -56,7 +56,7 @@ namespace Server.Engines.Astronomy
             // AstronomyTent at (4707, 1127, 0)
             var tentPoint = new Point3D(4707, 1127, 0);
             var tentFound = false;
-            foreach (var item in map.GetItemsAt<Server.Items.AstronomyTent>(tentPoint.X, tentPoint.Y))
+            foreach (var item in map.GetItemsAt<Server.Items.AstronomyTent>(tentPoint))
             {
                 if (item.Z == tentPoint.Z)
                 {
@@ -174,7 +174,7 @@ namespace Server.Engines.Astronomy
 
             // AstronomyTent at (4707, 1127, 0)
             var tentPoint = new Point3D(4707, 1127, 0);
-            foreach (var item in map.GetItemsAt<Server.Items.AstronomyTent>(tentPoint.X, tentPoint.Y))
+            foreach (var item in map.GetItemsAt<Server.Items.AstronomyTent>(tentPoint))
             {
                 if (item.Z == tentPoint.Z)
                 {
