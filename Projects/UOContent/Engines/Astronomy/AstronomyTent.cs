@@ -3,7 +3,7 @@ using ModernUO.Serialization;
 
 namespace Server.Items
 {
-    [SerializationGenerator(0, false)]
+    [SerializationGenerator(0)]
     public partial class AstronomyTent : BaseAddon
     {
         public override BaseAddonDeed Deed => null;

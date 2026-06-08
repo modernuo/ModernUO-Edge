@@ -3,7 +3,7 @@ using ModernUO.Serialization;
 
 namespace Server.Items
 {
-    [SerializationGenerator(0, false)]
+    [SerializationGenerator(0)]
     public partial class BrassOrrery : Item
     {
         [SerializableField(0)]
@@ -27,7 +27,7 @@ namespace Server.Items
 
         public void ToggleActivation(Mobile m)
         {
-            if (_active)
+            if (Active)
             {
                 ItemID = 0xA17C;
                 m.PlaySound(0x1E2);
