@@ -419,6 +419,13 @@ public class DefTinkering : CraftSystem
 
         AddCraft(typeof(Sextant), 1044051, 1024183, 0.0, 0.0, typeof(SextantParts), 1044175, 1, 1044253);
 
+        // Source: ServUO Scripts/Services/Craft/DefTinkering.cs:595-598 (Astronomy system)
+        // PersonalTelescope requires recipe 465, awarded by Willebrord (Astronomy NPC, Task 8 reward).
+        // WorkableGlass resource requirement omitted pending SA glassblowing port (ServUO requires 1x WorkableGlass).
+        index = AddCraft(typeof(PersonalTelescope), 1044051, 1125284, 95.0, 196.0, typeof(IronIngot), 1044036, 25, 1044037);
+        AddRes(index, typeof(SextantParts), 1044175, 1, 1044253);
+        AddRecipe(index, 465);
+
         index = AddCraft(typeof(Bola), 1044051, 1046441, 60.0, 80.0, typeof(BolaBall), 1046440, 4, 1042613);
         AddRes(index, typeof(Leather), 1044462, 3, 1044463);
 

@@ -100,9 +100,8 @@ public class DefCartography : CraftSystem
 
         // Source: ServUO Scripts/Services/Craft/DefCartography.cs:104
         // ServUO used SetForceSuccess(index, 75) which Edge's CraftItem does not support; the 0.0/60.0
-        // skill range provides natural skill-based success instead. Recipe 465 (granted by the Astronomy
-        // NPC reward in Task 8) is registered via AddRecipe so the craft is recipe-gated.
-        var index = AddCraft(typeof(StarChart), 1044448, 1158493, 0.0, 60.0, typeof(BlankMap), 1044449, 1, 1044450);
-        AddRecipe(index, 465);
+        // skill range provides natural skill-based success instead. StarChart is freely craftable —
+        // recipe 465 belongs to PersonalTelescope (Tinkering), taught by Willebrord's RecipeScroll(465).
+        AddCraft(typeof(StarChart), 1044448, 1158493, 0.0, 60.0, typeof(BlankMap), 1044449, 1, 1044450);
     }
 }
