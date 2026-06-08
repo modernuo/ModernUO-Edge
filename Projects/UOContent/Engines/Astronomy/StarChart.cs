@@ -154,6 +154,11 @@ public class StarChartGump : DynamicGump
             return;
         }
 
+        if (AstronomySystem.GetConstellation(chart.Constellation) == null)
+        {
+            return; // constellation data no longer exists (e.g. after a reset)
+        }
+
         pm.SendGump(new StarChartGump(pm, chart));
     }
 
@@ -171,16 +176,15 @@ public class StarChartGump : DynamicGump
             68,
             300,
             36,
-            (string.IsNullOrEmpty(Chart.ConstellationName)
-                ? "This constellation has not yet been named"
-                : Chart.ConstellationName).Color("#0040FF")
+            $"{(string.IsNullOrEmpty(Chart.ConstellationName) ? "This constellation has not yet been named" : Chart.ConstellationName)}",
+            "#0040FF"
         );
 
         builder.AddHtmlLocalized(32, 104, 75, 36, 1158502); // Charted By:
-        builder.AddHtml(112, 104, 50, 36, (Chart.ChartedBy?.Name ?? string.Empty).Color("#0040FF"));
+        builder.AddHtml(112, 104, 50, 36, $"{Chart.ChartedBy?.Name ?? string.Empty}", "#0040FF");
 
         builder.AddHtmlLocalized(32, 140, 75, 36, 1158503); // Charted On:
-        builder.AddHtml(112, 140, 80, 36, Chart.ChartedOn.ToShortDateString().Color("#0040FF"));
+        builder.AddHtml(112, 140, 80, 36, $"{Chart.ChartedOn.ToShortDateString()}", "#0040FF");
 
         builder.AddHtmlLocalized(32, 176, 125, 18, 1158504); // Time-Coordinate:
 
@@ -189,10 +193,10 @@ public class StarChartGump : DynamicGump
             builder.AddHtmlLocalized(47, 199, 60, 36, AstronomySystem.TimeCoordinateLocalization(info.TimeCoordinate), 0x1F);
 
             builder.AddHtmlLocalized(157, 199, 20, 36, 1158489); // RA
-            builder.AddHtml(182, 199, 20, 36, info.CoordRA.ToString().Color("#0040FF"));
+            builder.AddHtml(182, 199, 20, 36, $"{info.CoordRA}", "#0040FF");
 
             builder.AddHtmlLocalized(242, 199, 25, 36, 1158490); // DEC
-            builder.AddHtml(272, 199, 50, 36, info.CoordDEC.ToString().Color("#0040FF"));
+            builder.AddHtml(272, 199, 50, 36, $"{info.CoordDEC}", "#0040FF");
         }
 
         builder.AddBackground(32, 253, 343, 22, 0x2486);
@@ -206,6 +210,11 @@ public class StarChartGump : DynamicGump
         if (info.ButtonID != 1 || Chart?.Deleted != false || Chart.Constellation < 0)
         {
             return;
+        }
+
+        if (AstronomySystem.GetConstellation(Chart.Constellation) == null)
+        {
+            return; // constellation data no longer exists (e.g. after a reset)
         }
 
         var text = info.GetTextEntry(1);
