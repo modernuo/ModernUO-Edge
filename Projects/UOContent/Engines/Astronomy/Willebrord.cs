@@ -49,6 +49,7 @@ public partial class Willebrord : BaseVendor
 
     public override void OnDoubleClick(Mobile m)
     {
+        // InLOS(m) direction matches ServUO; LOS is symmetric so this is fine for a stationary NPC.
         if (m.InRange(Location, 3) && InLOS(m))
         {
             WillebrordInfoGump.DisplayTo(m);
@@ -101,6 +102,7 @@ public partial class Willebrord : BaseVendor
             SayTo(m, 1158529); // What's this? I haven't time for this! Star Charts only please!
         }
 
+        // Returns false (chart NOT consumed) to match ServUO. Re-submission is harmless: the constellation is flagged discovered on first success, so no second reward is granted.
         return false;
     }
 }
@@ -113,7 +115,11 @@ public class WillebrordInfoGump : StaticGump<WillebrordInfoGump>
 
     public static void DisplayTo(Mobile m)
     {
-        m?.SendGump(new WillebrordInfoGump());
+        if (m?.NetState == null)
+        {
+            return;
+        }
+        m.SendGump(new WillebrordInfoGump());
     }
 
     protected override void BuildLayout(ref StaticGumpBuilder builder)
@@ -139,7 +145,11 @@ public class WillebrordResultGump : DynamicGump
 
     public static void DisplayTo(Mobile m, int bodyCliloc)
     {
-        m?.SendGump(new WillebrordResultGump(bodyCliloc));
+        if (m?.NetState == null)
+        {
+            return;
+        }
+        m.SendGump(new WillebrordResultGump(bodyCliloc));
     }
 
     protected override void BuildLayout(ref DynamicGumpBuilder builder)
