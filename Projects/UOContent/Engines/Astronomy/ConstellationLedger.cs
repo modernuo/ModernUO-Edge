@@ -81,9 +81,9 @@ public class ConstellationLedgerGump : DynamicGump
                 continue;
             }
 
-            builder.AddHtml(15, y, 200, 18, $"{info.Name}", "#0040FF");
-            builder.AddHtml(240, y, 112, 18, $"{(info.DiscoveredBy != null ? info.DiscoveredBy.Name : "Unknown")}", "#0040FF");
-            builder.AddHtml(380, y, 112, 18, $"{info.DiscoveredOn.ToShortDateString()}", "#0040FF");
+            builder.AddHtml(15, y, 200, 18, info.Name, "#0040FF");
+            builder.AddHtml(240, y, 112, 18, info.DiscoveredBy?.Name ?? "Unknown", "#0040FF");
+            builder.AddHtml(380, y, 112, 18, info.DiscoveredOn.ToShortDateString(), "#0040FF");
             builder.AddHtmlLocalized(492, y, 130, 18, AstronomySystem.TimeCoordinateLocalization(info.TimeCoordinate), 0x1F, false, false);
 
             // RA ~1_VAL~  DEC ~2_VAL~
