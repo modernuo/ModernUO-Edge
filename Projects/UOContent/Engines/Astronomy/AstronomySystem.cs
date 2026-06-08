@@ -21,7 +21,7 @@ namespace Server.Engines.Astronomy
         private static readonly ILogger logger = LogFactory.GetLogger(typeof(AstronomySystem));
 
         // era gate (CLAUDE.md rule 11): Astronomy ~Pub 86; Core.TOL is the conservative modern-content flag
-        public static bool Enabled = Core.TOL;
+        public static bool Enabled { get; private set; } = Core.TOL;
 
         public static readonly int MaxConstellations = 1000;
         public static readonly int MaxRA = 24;
@@ -29,10 +29,10 @@ namespace Server.Engines.Astronomy
 
         public static AstronomySystem Instance { get; private set; }
 
-        public static int LoadedConstellations { get; set; }
-        public static List<ConstellationInfo> Constellations { get; set; } = new();
-        public static List<Tuple<int, int>> InterstellarObjects { get; set; } = new();
-        public static List<int> DiscoveredConstellations { get; set; } = new();
+        public static int LoadedConstellations { get; private set; }
+        public static List<ConstellationInfo> Constellations { get; private set; } = new();
+        public static List<Tuple<int, int>> InterstellarObjects { get; private set; } = new();
+        public static List<int> DiscoveredConstellations { get; private set; } = new();
 
         public AstronomySystem() : base("Astronomy", 30)
         {
@@ -74,15 +74,15 @@ namespace Server.Engines.Astronomy
 
             if (LoadedConstellations > 0)
             {
-                if (Constellations.Where(c => c.TimeCoordinate == TimeCoordinate.FiveToEight).Count() > Constellations.Where(c => c.TimeCoordinate == TimeCoordinate.NineToEleven).Count())
+                if (Constellations.Count(c => c.TimeCoordinate == TimeCoordinate.FiveToEight) > Constellations.Count(c => c.TimeCoordinate == TimeCoordinate.NineToEleven))
                 {
                     next = TimeCoordinate.NineToEleven;
                 }
-                else if (Constellations.Where(c => c.TimeCoordinate == TimeCoordinate.NineToEleven).Count() > Constellations.Where(c => c.TimeCoordinate == TimeCoordinate.Midnight).Count())
+                else if (Constellations.Count(c => c.TimeCoordinate == TimeCoordinate.NineToEleven) > Constellations.Count(c => c.TimeCoordinate == TimeCoordinate.Midnight))
                 {
                     next = TimeCoordinate.Midnight;
                 }
-                else if (Constellations.Where(c => c.TimeCoordinate == TimeCoordinate.Midnight).Count() > Constellations.Where(c => c.TimeCoordinate == TimeCoordinate.OneToFour).Count())
+                else if (Constellations.Count(c => c.TimeCoordinate == TimeCoordinate.Midnight) > Constellations.Count(c => c.TimeCoordinate == TimeCoordinate.OneToFour))
                 {
                     next = TimeCoordinate.OneToFour;
                 }
@@ -95,6 +95,7 @@ namespace Server.Engines.Astronomy
 
                 do
                 {
+                    // RandomMinMax is inclusive, so RA can be 0..24 — preserved as-is for ServUO parity
                     ra = Utility.RandomMinMax(0, MaxRA);
                     dec = Utility.RandomMinMax(0, (int)MaxDEC) + Utility.RandomList(.2, .4, .6, .8, .0);
                 }
@@ -143,7 +144,7 @@ namespace Server.Engines.Astronomy
 
         public static bool CheckNameExists(string name)
         {
-            return Constellations.Any(c => !string.IsNullOrEmpty(c.Name) && c.Name.ToLower() == name.ToLower());
+            return Constellations.Any(c => !string.IsNullOrEmpty(c.Name) && c.Name.InsensitiveEquals(name));
         }
 
         public static TimeCoordinate GetTimeCoordinate(IEntity e)
@@ -160,7 +161,8 @@ namespace Server.Engines.Astronomy
                 return TimeCoordinate.NineToEleven;
             }
 
-            if ((hours >= 24 && hours < 1) || hours == 0)
+            // Clock.GetTime returns 0-23; midnight is hour 0 (ServUO's hours>=24 sub-expression was dead)
+            if (hours == 0)
             {
                 return TimeCoordinate.Midnight;
             }
