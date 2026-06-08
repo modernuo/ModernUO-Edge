@@ -117,6 +117,12 @@ public partial class StarChart : Item, ICraftable
         }
     }
 
+    public override void OnAfterDelete()
+    {
+        base.OnAfterDelete();
+        ChartedBy = null;
+    }
+
     public override void GetProperties(IPropertyList list)
     {
         base.GetProperties(list);
@@ -184,7 +190,7 @@ public class StarChartGump : DynamicGump
         builder.AddHtml(112, 104, 50, 36, $"{Chart.ChartedBy?.Name ?? string.Empty}", "#0040FF");
 
         builder.AddHtmlLocalized(32, 140, 75, 36, 1158503); // Charted On:
-        builder.AddHtml(112, 140, 80, 36, $"{Chart.ChartedOn.ToShortDateString()}", "#0040FF");
+        builder.AddHtml(112, 140, 80, 36, $"{Chart.ChartedOn:d}", "#0040FF");
 
         builder.AddHtmlLocalized(32, 176, 125, 18, 1158504); // Time-Coordinate:
 

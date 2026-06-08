@@ -72,7 +72,7 @@ public class ConstellationLedgerGump : DynamicGump
         var start = Page * 20;
         var y = 145;
 
-        for (var i = start; i < AstronomySystem.DiscoveredConstellations.Count && i <= start + 20; i++)
+        for (var i = start; i < AstronomySystem.DiscoveredConstellations.Count && i < start + 20; i++) // 20 per page (ServUO used <= which rendered 21; corrected to match Pages math)
         {
             var info = AstronomySystem.GetConstellation(AstronomySystem.DiscoveredConstellations[i]);
 
