@@ -15,6 +15,15 @@ namespace Server.Items;
 [SerializationGenerator(0)]
 public partial class PersonalTelescope : Item, ISecurable
 {
+    private static readonly string[] _Names =
+    {
+        "Adranath", "Aeluva the Arcanist", "Aesthyron", "Anon", "Balaki", "Clanin", "Dexter", "Doctor Spector", "Dryus Doost",
+        "Gilform", "Grizelda the Hag", "Hawkwind", "Heigel of Moonglow", "Intanya", "Juo'Nar", "King Blackthorn", "Koole the Arcanist",
+        "Kronos", "Kyrnia", "Lathiari", "Leoric Gathenwale", "Lysander Gathenwale", "Malabelle", "Mariah", "Melissa", "Minax",
+        "Mondain", "Mordra", "Mythran", "Neira the Necromancer", "Nystul", "Queen Zhah", "Relvinian", "Selsius the Astronomer",
+        "Sutek", "Uzeraan", "Wexton the Apprentice"
+    };
+
     [SerializableProperty(0)]
     [CommandProperty(AccessLevel.GameMaster)]
     public string DisplayName
@@ -56,6 +65,7 @@ public partial class PersonalTelescope : Item, ISecurable
         }
     }
 
+    // Intentionally not serialized — transient cooldown, matches ServUO.
     public DateTime LastUse { get; set; }
 
     [CommandProperty(AccessLevel.GameMaster)]
@@ -72,33 +82,39 @@ public partial class PersonalTelescope : Item, ISecurable
 
     public override void OnDoubleClick(Mobile m)
     {
-        if (!IsLockedDown)
+        if (m is not PlayerMobile pm)
         {
-            m.SendLocalizedMessage(1114298); // This must be locked down in order to use it.
             return;
         }
 
-        if (m.InRange(Location, 2))
+        if (!IsLockedDown)
+        {
+            pm.SendLocalizedMessage(1114298); // This must be locked down in order to use it.
+            return;
+        }
+
+        if (pm.InRange(Location, 2))
         {
             var house = BaseHouse.FindHouseAt(this);
 
-            if (house != null && house.HasSecureAccess(m, Level))
+            if (house != null && house.HasSecureAccess(pm, Level))
             {
+                // Faithful to ServUO: first use after a 10-min idle shows "calibrating" and requires a second double-click to open. Intentional parity, not a bug.
                 if (DateTime.UtcNow - LastUse > TimeSpan.FromMinutes(10))
                 {
-                    m.SendLocalizedMessage(1158643); // The telescope is calibrating, try again in a moment.
+                    pm.SendLocalizedMessage(1158643); // The telescope is calibrating, try again in a moment.
 
                     LastUse = DateTime.UtcNow;
                 }
                 else
                 {
-                    m.SendGump(new TelescopeGump((PlayerMobile)m, this));
+                    TelescopeGump.DisplayTo(pm, this);
                 }
             }
         }
         else
         {
-            m.LocalOverheadMessage(MessageType.Regular, 0x3B2, 1019045); // I can't reach that.
+            pm.LocalOverheadMessage(MessageType.Regular, 0x3B2, 1019045); // I can't reach that.
         }
     }
 
@@ -119,15 +135,6 @@ public partial class PersonalTelescope : Item, ISecurable
 
         SetSecureLevelEntry.AddTo(from, this, ref list);
     }
-
-    private static readonly string[] _Names =
-    {
-        "Adranath", "Aeluva the Arcanist", "Aesthyron", "Anon", "Balaki", "Clanin", "Dexter", "Doctor Spector", "Dryus Doost",
-        "Gilform", "Grizelda the Hag", "Hawkwind", "Heigel of Moonglow", "Intanya", "Juo'Nar", "King Blackthorn", "Koole the Arcanist",
-        "Kronos", "Kyrnia", "Lathiari", "Leoric Gathenwale", "Lysander Gathenwale", "Malabelle", "Mariah", "Melissa", "Minax",
-        "Mondain", "Mordra", "Mythran", "Neira the Necromancer", "Nystul", "Queen Zhah", "Relvinian", "Selsius the Astronomer",
-        "Sutek", "Uzeraan", "Wexton the Apprentice"
-    };
 }
 
 public class TelescopeGump : DynamicGump
@@ -141,10 +148,20 @@ public class TelescopeGump : DynamicGump
 
     public override bool Singleton => true;
 
-    public TelescopeGump(PlayerMobile pm, PersonalTelescope tele) : base(200, 200)
+    private TelescopeGump(PlayerMobile pm, PersonalTelescope tele) : base(200, 200)
     {
         _player = pm;
         Tele = tele;
+    }
+
+    public static void DisplayTo(PlayerMobile pm, PersonalTelescope tele)
+    {
+        if (pm?.NetState == null || tele?.Deleted != false)
+        {
+            return;
+        }
+
+        pm.SendGump(new TelescopeGump(pm, tele));
     }
 
     protected override void BuildLayout(ref DynamicGumpBuilder builder)
@@ -224,7 +241,7 @@ public class TelescopeGump : DynamicGump
 
     private void Refresh()
     {
-        _player.SendGump(new TelescopeGump(_player, Tele));
+        TelescopeGump.DisplayTo(_player, Tele);
     }
 
     public override void OnResponse(NetState sender, in RelayInfo info)
@@ -284,9 +301,9 @@ public class TelescopeGump : DynamicGump
                 }
             case 60003: // RA 1's Down
                 {
-                    var raOnes1 = GetPlace(Tele.RA, 1);
+                    var raOnes = GetPlace(Tele.RA, 1);
 
-                    if (raOnes1 == 0)
+                    if (raOnes == 0)
                     {
                         Tele.RA += 9;
                     }
@@ -344,9 +361,9 @@ public class TelescopeGump : DynamicGump
                 }
             case 60007: // DEC 1's Down
                 {
-                    var decOnes1 = GetPlace((int)Math.Truncate(Tele.DEC), 1);
+                    var decOnes = GetPlace((int)Math.Truncate(Tele.DEC), 1);
 
-                    if (decOnes1 <= 0)
+                    if (decOnes <= 0)
                     {
                         Tele.DEC += 9;
                     }
