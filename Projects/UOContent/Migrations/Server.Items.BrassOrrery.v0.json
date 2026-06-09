@@ -1,0 +1,14 @@
+{
+  "version": 0,
+  "type": "Server.Items.BrassOrrery",
+  "properties": [
+    {
+      "name": "Active",
+      "type": "bool",
+      "rule": "PrimitiveTypeMigrationRule",
+      "ruleArguments": [
+        ""
+      ]
+    }
+  ]
+}
