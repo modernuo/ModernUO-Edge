@@ -23,6 +23,10 @@ namespace Server.Engines.Astronomy
         // (read in Configure, or flipped at runtime by Enable/Disable). [GenAstronomy] calls Enable().
         public static bool Enabled { get; private set; }
 
+        // Debug/test override for the telescope's time-of-day, set via [AstronomyTime. Not serialized
+        // (clears on restart). When set, GetTimeCoordinate returns it instead of reading the world clock.
+        public static TimeCoordinate? ForcedTimeCoordinate { get; set; }
+
         public static readonly int MaxConstellations = 1000;
         public static readonly int MaxRA = 24;
         public static readonly double MaxDEC = 90;
@@ -186,6 +190,11 @@ namespace Server.Engines.Astronomy
 
         public static TimeCoordinate GetTimeCoordinate(IEntity e)
         {
+            if (ForcedTimeCoordinate.HasValue)
+            {
+                return ForcedTimeCoordinate.Value;
+            }
+
             Clock.GetTime(e.Map, e.X, e.Y, out var hours, out _, out _);
 
             if (hours >= 17 && hours < 21)

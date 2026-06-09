@@ -1,4 +1,5 @@
 // Source: ServUO Scripts/Services/Astronomy/Willebrord.cs (Initialize placement)
+using System;
 using Server.Mobiles;
 
 namespace Server.Engines.Astronomy
@@ -9,6 +10,42 @@ namespace Server.Engines.Astronomy
         {
             CommandSystem.Register("GenAstronomy", AccessLevel.Administrator, Generate);
             CommandSystem.Register("DelAstronomy", AccessLevel.Administrator, Delete);
+            CommandSystem.Register("AstronomyTime", AccessLevel.Administrator, AstronomyTime_OnCommand);
+        }
+
+        [Usage("AstronomyTime <Day|FiveToEight|NineToEleven|Midnight|OneToFour|clear>")]
+        [Description(
+            "Debug: overrides the time-of-day telescopes use (constellations only appear at night). " +
+            "'clear' reverts to the world clock. The override is not saved and resets on restart."
+        )]
+        private static void AstronomyTime_OnCommand(CommandEventArgs e)
+        {
+            if (e.Length < 1)
+            {
+                var current = AstronomySystem.ForcedTimeCoordinate?.ToString() ?? "none (using world clock)";
+                e.Mobile.SendMessage($"Astronomy time override: {current}");
+                e.Mobile.SendMessage("Usage: [AstronomyTime <Day|FiveToEight|NineToEleven|Midnight|OneToFour|clear>");
+                return;
+            }
+
+            var arg = e.GetString(0);
+
+            if (arg.InsensitiveEquals("clear") || arg.InsensitiveEquals("none") || arg.InsensitiveEquals("real"))
+            {
+                AstronomySystem.ForcedTimeCoordinate = null;
+                e.Mobile.SendMessage("Astronomy time override cleared; telescopes will use the world clock.");
+                return;
+            }
+
+            if (Enum.TryParse<TimeCoordinate>(arg, true, out var coord))
+            {
+                AstronomySystem.ForcedTimeCoordinate = coord;
+                e.Mobile.SendMessage($"Astronomy time forced to {coord}. Use [AstronomyTime clear to revert.");
+            }
+            else
+            {
+                e.Mobile.SendMessage("Invalid value. Use one of: Day, FiveToEight, NineToEleven, Midnight, OneToFour, clear.");
+            }
         }
 
         [Usage("GenAstronomy")]
