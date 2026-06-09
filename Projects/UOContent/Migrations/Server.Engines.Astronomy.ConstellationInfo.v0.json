@@ -1,0 +1,66 @@
+{
+  "version": 0,
+  "type": "Server.Engines.Astronomy.ConstellationInfo",
+  "properties": [
+    {
+      "name": "Identifier",
+      "type": "int",
+      "rule": "PrimitiveTypeMigrationRule",
+      "ruleArguments": [
+        ""
+      ]
+    },
+    {
+      "name": "TimeCoordinate",
+      "type": "Server.Engines.Astronomy.TimeCoordinate",
+      "rule": "EnumMigrationRule"
+    },
+    {
+      "name": "CoordRA",
+      "type": "int",
+      "rule": "PrimitiveTypeMigrationRule",
+      "ruleArguments": [
+        ""
+      ]
+    },
+    {
+      "name": "CoordDEC",
+      "type": "double",
+      "rule": "PrimitiveTypeMigrationRule",
+      "ruleArguments": [
+        ""
+      ]
+    },
+    {
+      "name": "Name",
+      "type": "string",
+      "rule": "PrimitiveTypeMigrationRule",
+      "ruleArguments": [
+        ""
+      ]
+    },
+    {
+      "name": "DiscoveredBy",
+      "type": "Server.Mobile",
+      "rule": "SerializableInterfaceMigrationRule"
+    },
+    {
+      "name": "DiscoveredOn",
+      "type": "System.DateTime",
+      "rule": "PrimitiveTypeMigrationRule",
+      "ruleArguments": [
+        ""
+      ]
+    },
+    {
+      "name": "StarPositions",
+      "type": "Server.Engines.Astronomy.StarPosition[]",
+      "rule": "ArrayMigrationRule",
+      "ruleArguments": [
+        "Server.Engines.Astronomy.StarPosition",
+        "RawSerializableMigrationRule",
+        ""
+      ]
+    }
+  ]
+}

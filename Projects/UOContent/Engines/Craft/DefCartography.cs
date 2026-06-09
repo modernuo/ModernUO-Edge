@@ -83,6 +83,11 @@ public class DefCartography : CraftSystem
             return 1044155; // You create an exceptional quality item.
         }
 
+        if (item.ItemType == typeof(StarChart))
+        {
+            return 1158494; // Which telescope do you wish to create the star chart from?
+        }
+
         return 1044154; // You create the item.
     }
 
@@ -92,5 +97,11 @@ public class DefCartography : CraftSystem
         AddCraft(typeof(CityMap), 1044448, 1015231, 25.0, 85.0, typeof(BlankMap), 1044449, 1, 1044450);
         AddCraft(typeof(SeaChart), 1044448, 1015232, 35.0, 95.0, typeof(BlankMap), 1044449, 1, 1044450);
         AddCraft(typeof(WorldMap), 1044448, 1015233, 39.5, 99.5, typeof(BlankMap), 1044449, 1, 1044450);
+
+        // Source: ServUO Scripts/Services/Craft/DefCartography.cs:104
+        // ServUO used SetForceSuccess(index, 75) which Edge's CraftItem does not support; the 0.0/60.0
+        // skill range provides natural skill-based success instead. StarChart is freely craftable —
+        // recipe 465 belongs to PersonalTelescope (Tinkering), taught by Willebrord's RecipeScroll(465).
+        AddCraft(typeof(StarChart), 1044448, 1158493, 0.0, 60.0, typeof(BlankMap), 1044449, 1, 1044450);
     }
 }
