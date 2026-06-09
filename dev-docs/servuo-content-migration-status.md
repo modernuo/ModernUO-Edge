@@ -9,22 +9,26 @@ Status legend: ✅ Ported · 🔄 In progress · ⏳ Planned · ⛔ Deferred/blo
 |---|---|---|---|---|---|
 | **Astronomy** (telescope constellation minigame) | ~Pub 86; **opt-in** (`astronomy.enabled`, default off) | ✅ Ported (pilot) | PR #1 | Cartography (present), Tinkering (present), `SextantParts` (present) | First migration PR. See divergences/deferrals below. |
 
+## Known gaps & future efforts (backlog)
+
+Accepted divergences and deferrals across all ported systems, tracked here (not as GH issues) so the
+follow-up work stays in one place. Each item names the system that first hit it; several are shared
+engine/foundation gaps that later systems will also need. Check off when closed and link the PR.
+
+- [ ] **`WorkableGlass` + SA glassblowing** — *(Astronomy)* `PersonalTelescope` Tinkering recipe omits the 1× `WorkableGlass` resource (currently `IronIngot ×25 + SextantParts ×1`) because the SA glassblowing resource/system isn't ported. **Close:** port glassblowing, then re-add the `AddRes(index, typeof(WorkableGlass), 1154170, 1, 1154171)` line in `DefTinkering.cs`.
+- [ ] **RewardTitle system** — *(Astronomy)* Edge has no reward-title infrastructure (`BaseRewardTitleDeed` absent), so `Willebrord`'s discovery reward grants only `RecipeScroll(465)`, dropping ServUO's `AstronomerTitleDeed`. **Close:** port a RewardTitle foundation, then restore the title-deed grant in `Willebrord.OnDragDrop`.
+- [ ] **Craft force-success mechanism** — *(Astronomy)* Edge's craft system has no `SetForceSuccess`; `StarChart` uses a skill-based `0.0–60.0` Cartography range instead of ServUO's flat 75%. **Close:** add a force-success option to the craft engine (or decide skill-based is the desired behavior).
+- [ ] **`SayTo` hue overload** — *(Astronomy)* Edge `BaseVendor.SayTo` has no text-hue overload, so `Willebrord`'s "Star Charts only" line dropped ServUO's `1163` hue. **Close:** add a hued `SayTo`/`SayTo`-equivalent, or accept default hue.
+
+**Intentional, not gaps (no follow-up needed):** `StarChart` is not consumed on submission (returns `false`, matches ServUO; re-submission grants no second reward). Ledger pagination was *corrected* to 20 rows/page (ServUO's loop rendered 21) — a fix, not a divergence to revert.
+
 ## Astronomy — details
 
 Ported files (`Projects/UOContent/Engines/Astronomy/`): `AstronomySystem` (GenericPersistence singleton, 1000 constellations), `ConstellationInfo`, `PersonalTelescope` (+ telescope gump), `StarChart` (+ naming gump, Cartography craft), `ConstellationLedger` (+ paged gump), `BrassOrrery`, `PrimerOnBritannianAstronomy`, `AstronomyTent`, `Willebrord` (NPC), `AstronomyGeneration` (`[GenAstronomy]`/`[DelAstronomy]`). Craft edits: `DefCartography` (StarChart), `DefTinkering` (PersonalTelescope = recipe 465). Tests: serialization round-trips for `ConstellationInfo` and the `AstronomySystem` persistence blob.
 
 **Opt-in (like Factions):** disabled by default. `AstronomySystem.Configure()` reads `ServerConfiguration.GetSetting("astronomy.enabled", false)`; when off, no persistence/singleton is registered and the static helpers are NPE-safe (operate on empty lists). `AstronomySystem.Enable()`/`Disable()` toggle at runtime and persist the setting (Register/Unregister the `GenericPersistence`). `[GenAstronomy]` calls `Enable()` then places the world content (mirrors the Factions generator). No era gate — content uses ~Pub 86 clilocs, so a reasonably modern client is needed, but enablement is the admin's choice.
 
-### Accepted divergences from ServUO (intentional)
-- **StarChart craft uses skill-based success** (0.0–60.0 Cartography) instead of ServUO's `SetForceSuccess(index, 75)` — that API does not exist in ModernUO Edge.
-- **PersonalTelescope Tinkering recipe omits the `WorkableGlass` resource** (ServUO requires 1×). `WorkableGlass` is an unported SA glassblowing resource. Recipe currently needs `IronIngot ×25 + SextantParts ×1`. Re-add `WorkableGlass` when SA glassblowing is ported. Marked with a comment in `DefTinkering.cs`.
-- **`Willebrord.SayTo` hue argument dropped** — ServUO passed a text hue (`1163`); Edge `SayTo` has no hue overload. Message cliloc unchanged.
-- **StarChart not consumed on submission** — `OnDragDrop` returns `false` (chart retained), matching ServUO. Re-submission is harmless (constellation flagged discovered on first success → no second reward).
-- **Ledger pagination off-by-one fixed** — ServUO's row loop showed 21 rows/page; corrected to 20 to match the page-count math (a bug fix, slight display divergence from source).
-
-### Deferred (tracked follow-ups)
-- ⛔ **`AstronomerTitleDeed` reward** — ServUO grants it alongside `RecipeScroll(465)` on discovery. Edge has **no reward-title system** (`BaseRewardTitleDeed` absent). Pilot grants only the recipe scroll. Add the deed once a RewardTitle foundation lands.
-- ⛔ **`WorkableGlass` + SA glassblowing** — see divergence above.
+Its accepted divergences and deferred items are tracked in the **Known gaps & future efforts** backlog above (`WorkableGlass`/glassblowing, RewardTitle/`AstronomerTitleDeed`, craft force-success, `SayTo` hue).
 
 ### Verification status
 - ✅ `dotnet build` (full solution): 0 warnings, 0 errors.
