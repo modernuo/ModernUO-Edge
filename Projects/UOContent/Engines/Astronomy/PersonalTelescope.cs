@@ -24,34 +24,18 @@ public partial class PersonalTelescope : Item, ISecurable
         "Sutek", "Uzeraan", "Wexton the Apprentice"
     };
 
-    [SerializableProperty(0)]
-    [CommandProperty(AccessLevel.GameMaster)]
-    public string DisplayName
-    {
-        get => _displayName;
-        set
-        {
-            _displayName = value;
-            InvalidateProperties();
-            this.MarkDirty();
-        }
-    }
+    [SerializableField(0)]
+    [InvalidateProperties]
+    [SerializedCommandProperty(AccessLevel.GameMaster)]
+    private string _displayName;
 
     [SerializableField(1)]
     [SerializedCommandProperty(AccessLevel.GameMaster)]
     private SecureLevel _level;
 
-    [SerializableProperty(2)]
-    [CommandProperty(AccessLevel.GameMaster)]
-    public int RA
-    {
-        get => _rA;
-        set
-        {
-            _rA = value;
-            this.MarkDirty();
-        }
-    }
+    [SerializableField(2)]
+    [SerializedCommandProperty(AccessLevel.GameMaster)]
+    private int _rA;
 
     [SerializableProperty(3)]
     [CommandProperty(AccessLevel.GameMaster)]
@@ -77,7 +61,7 @@ public partial class PersonalTelescope : Item, ISecurable
     public PersonalTelescope() : base(0xA12C)
     {
         _level = SecureLevel.Owner;
-        _displayName = _Names[Utility.Random(_Names.Length)];
+        _displayName = _Names.RandomElement();
     }
 
     public override void OnDoubleClick(Mobile m)
@@ -144,7 +128,7 @@ public class TelescopeGump : DynamicGump
     public PersonalTelescope Tele { get; }
     public int ImageID { get; set; }
     public ConstellationInfo Constellation { get; set; }
-    public Tuple<int, int> InterstellarObject { get; set; }
+    public (int ImageId, int Cliloc)? InterstellarObject { get; set; }
 
     public override bool Singleton => true;
 
@@ -218,30 +202,15 @@ public class TelescopeGump : DynamicGump
 
         if (Constellation != null)
         {
-            RenderConstellation(ref builder);
+            foreach (var pos in Constellation.StarPositions)
+            {
+                builder.AddImage(pos.X, pos.Y, pos.ImageID);
+            }
         }
         else if (InterstellarObject != null)
         {
-            RenderInterstellarObject(ref builder);
+            builder.AddImage(180, 150, InterstellarObject.Value.ImageId);
         }
-    }
-
-    private void RenderInterstellarObject(ref DynamicGumpBuilder builder)
-    {
-        builder.AddImage(180, 150, InterstellarObject.Item1);
-    }
-
-    private void RenderConstellation(ref DynamicGumpBuilder builder)
-    {
-        foreach (var pos in Constellation.StarPositions)
-        {
-            builder.AddImage(pos.X, pos.Y, pos.ImageID);
-        }
-    }
-
-    private void Refresh()
-    {
-        TelescopeGump.DisplayTo(_player, Tele);
     }
 
     public override void OnResponse(NetState sender, in RelayInfo info)
@@ -447,7 +416,7 @@ public class TelescopeGump : DynamicGump
                             {
                                 InterstellarObject = AstronomySystem.GetRandomInterstellarObject();
 
-                                _player.SendLocalizedMessage(InterstellarObject.Item2, "", 0xBF);
+                                _player.SendLocalizedMessage(InterstellarObject.Value.Cliloc, "", 0xBF);
                                 _player.SendSound(_player.Female ? 0x32B : 0x43D);
                             }
                             else
@@ -458,14 +427,14 @@ public class TelescopeGump : DynamicGump
                         }
                     }
 
-                    Refresh();
+                    DisplayTo(_player, Tele);
                     return;
                 }
         }
 
         if (info.ButtonID != 0)
         {
-            Refresh();
+            DisplayTo(_player, Tele);
         }
     }
 

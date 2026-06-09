@@ -29,31 +29,15 @@ public partial class StarChart : Item, ICraftable
         }
     }
 
-    [SerializableProperty(1)]
-    [CommandProperty(AccessLevel.GameMaster)]
-    public string ConstellationName
-    {
-        get => _constellationName;
-        set
-        {
-            _constellationName = value;
-            InvalidateProperties();
-            this.MarkDirty();
-        }
-    }
+    [SerializableField(1)]
+    [InvalidateProperties]
+    [SerializedCommandProperty(AccessLevel.GameMaster)]
+    private string _constellationName;
 
-    [SerializableProperty(2)]
-    [CommandProperty(AccessLevel.GameMaster)]
-    public Mobile ChartedBy
-    {
-        get => _chartedBy;
-        set
-        {
-            _chartedBy = value;
-            InvalidateProperties();
-            this.MarkDirty();
-        }
-    }
+    [SerializableField(2)]
+    [InvalidateProperties]
+    [SerializedCommandProperty(AccessLevel.GameMaster)]
+    private Mobile _chartedBy;
 
     [SerializableField(3)]
     [SerializedCommandProperty(AccessLevel.GameMaster)]

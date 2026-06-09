@@ -1,5 +1,4 @@
 // Source: ServUO Scripts/Services/Astronomy/AstronomySystem.cs
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Server.Items;
@@ -32,7 +31,7 @@ namespace Server.Engines.Astronomy
 
         public static int LoadedConstellations { get; private set; }
         public static List<ConstellationInfo> Constellations { get; private set; } = new();
-        public static List<Tuple<int, int>> InterstellarObjects { get; private set; } = new();
+        public static List<(int ImageId, int Cliloc)> InterstellarObjects { get; private set; } = new();
         public static List<int> DiscoveredConstellations { get; private set; } = new();
 
         public AstronomySystem() : base("Astronomy", 30)
@@ -97,11 +96,11 @@ namespace Server.Engines.Astronomy
         {
             InterstellarObjects.Clear();
 
-            for (var i = 0x68D; i <= 0x693; i++) { InterstellarObjects.Add(new Tuple<int, int>(i, 1158514)); } // comets
-            for (var i = 0x69F; i <= 0x6A6; i++) { InterstellarObjects.Add(new Tuple<int, int>(i, 1158734)); } // felucca
-            for (var i = 0x6A7; i <= 0x6AE; i++) { InterstellarObjects.Add(new Tuple<int, int>(i, 1158735)); } // trammel
-            for (var i = 0x6AF; i <= 0x6BC; i++) { InterstellarObjects.Add(new Tuple<int, int>(i, 1158736)); } // galaxy
-            for (var i = 0x6BD; i <= 0x6CD; i++) { InterstellarObjects.Add(new Tuple<int, int>(i, 1158737)); } // planet
+            for (var i = 0x68D; i <= 0x693; i++) { InterstellarObjects.Add((i, 1158514)); } // comets
+            for (var i = 0x69F; i <= 0x6A6; i++) { InterstellarObjects.Add((i, 1158734)); } // felucca
+            for (var i = 0x6A7; i <= 0x6AE; i++) { InterstellarObjects.Add((i, 1158735)); } // trammel
+            for (var i = 0x6AF; i <= 0x6BC; i++) { InterstellarObjects.Add((i, 1158736)); } // galaxy
+            for (var i = 0x6BD; i <= 0x6CD; i++) { InterstellarObjects.Add((i, 1158737)); } // planet
         }
 
         private static void CreateConstellations(int amount)
@@ -133,7 +132,7 @@ namespace Server.Engines.Astronomy
                 {
                     // RandomMinMax is inclusive, so RA can be 0..24 — preserved as-is for ServUO parity
                     ra = Utility.RandomMinMax(0, MaxRA);
-                    dec = Utility.RandomMinMax(0, (int)MaxDEC) + Utility.RandomList(.2, .4, .6, .8, .0);
+                    dec = Utility.RandomMinMax(0, (int)MaxDEC) + Utility.RandomList(0.2, 0.4, 0.6, 0.8, 0);
                 }
                 while (CheckExists(next, ra, dec));
 
@@ -230,7 +229,7 @@ namespace Server.Engines.Astronomy
             };
         }
 
-        public static Tuple<int, int> GetRandomInterstellarObject()
+        public static (int ImageId, int Cliloc) GetRandomInterstellarObject()
         {
             return InterstellarObjects[Utility.Random(InterstellarObjects.Count)];
         }
@@ -272,7 +271,14 @@ namespace Server.Engines.Astronomy
 
             for (var i = 0; i < LoadedConstellations; i++)
             {
-                Constellations.Add(new ConstellationInfo(reader));
+                var info = new ConstellationInfo();
+                info.Deserialize(reader);
+                Constellations.Add(info);
+
+                if (info.HasBeenDiscovered)
+                {
+                    AddDiscovery(info);
+                }
             }
         }
 

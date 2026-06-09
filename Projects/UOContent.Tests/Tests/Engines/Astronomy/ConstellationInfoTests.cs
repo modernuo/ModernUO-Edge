@@ -12,8 +12,8 @@ public class ConstellationInfoTests
     {
         var stars = new[]
         {
-            new ConstellationInfo.StarPosition { ImageID = 0x668, X = 200, Y = 180 },
-            new ConstellationInfo.StarPosition { ImageID = 0x670, X = 300, Y = 250 }
+            new StarPosition { ImageID = 0x668, X = 200, Y = 180 },
+            new StarPosition { ImageID = 0x670, X = 300, Y = 250 }
         };
 
         var original = new ConstellationInfo(TimeCoordinate.Midnight, 12, 45.6, stars)
@@ -29,7 +29,8 @@ public class ConstellationInfoTests
         writer.Buffer.AsSpan(0, (int)writer.Position).CopyTo(buffer);
 
         var reader = new BufferReader(buffer);
-        var loaded = new ConstellationInfo(reader);
+        var loaded = new ConstellationInfo();
+        loaded.Deserialize(reader);
 
         Assert.Equal(original.Identifier, loaded.Identifier);
         Assert.Equal(original.TimeCoordinate, loaded.TimeCoordinate);
