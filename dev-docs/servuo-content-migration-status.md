@@ -7,13 +7,13 @@ Status legend: ✅ Ported · 🔄 In progress · ⏳ Planned · ⛔ Deferred/blo
 
 | Feature | Era | Status | PR | Dependencies | Notes |
 |---|---|---|---|---|---|
-| **Astronomy** (telescope constellation minigame) | TOL (~Pub 86; gated `Core.TOL`) | ✅ Ported (pilot) | _pending_ | Cartography (present), Tinkering (present), `SextantParts` (present) | First migration PR. See divergences/deferrals below. |
+| **Astronomy** (telescope constellation minigame) | ~Pub 86; **opt-in** (`astronomy.enabled`, default off) | ✅ Ported (pilot) | PR #1 | Cartography (present), Tinkering (present), `SextantParts` (present) | First migration PR. See divergences/deferrals below. |
 
 ## Astronomy — details
 
 Ported files (`Projects/UOContent/Engines/Astronomy/`): `AstronomySystem` (GenericPersistence singleton, 1000 constellations), `ConstellationInfo`, `PersonalTelescope` (+ telescope gump), `StarChart` (+ naming gump, Cartography craft), `ConstellationLedger` (+ paged gump), `BrassOrrery`, `PrimerOnBritannianAstronomy`, `AstronomyTent`, `Willebrord` (NPC), `AstronomyGeneration` (`[GenAstronomy]`/`[DelAstronomy]`). Craft edits: `DefCartography` (StarChart), `DefTinkering` (PersonalTelescope = recipe 465). Tests: serialization round-trips for `ConstellationInfo` and the `AstronomySystem` persistence blob.
 
-**Era gate:** single source — `AstronomySystem.Enabled = Core.TOL`. `Configure()` early-returns when disabled (no persistence registered); `[GenAstronomy]` checks it. Disabled state is NPE-safe (static helpers operate on empty lists).
+**Opt-in (like Factions):** disabled by default. `AstronomySystem.Configure()` reads `ServerConfiguration.GetSetting("astronomy.enabled", false)`; when off, no persistence/singleton is registered and the static helpers are NPE-safe (operate on empty lists). `AstronomySystem.Enable()`/`Disable()` toggle at runtime and persist the setting (Register/Unregister the `GenericPersistence`). `[GenAstronomy]` calls `Enable()` then places the world content (mirrors the Factions generator). No era gate — content uses ~Pub 86 clilocs, so a reasonably modern client is needed, but enablement is the admin's choice.
 
 ### Accepted divergences from ServUO (intentional)
 - **StarChart craft uses skill-based success** (0.0–60.0 Cartography) instead of ServUO's `SetForceSuccess(index, 75)` — that API does not exist in ModernUO Edge.

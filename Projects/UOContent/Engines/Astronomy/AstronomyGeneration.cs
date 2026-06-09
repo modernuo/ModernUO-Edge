@@ -12,17 +12,14 @@ namespace Server.Engines.Astronomy
         }
 
         [Usage("GenAstronomy")]
-        [Description("Places the fixed Astronomy world objects (Willebrord, tent, telescope, orrery, ledger, primer) if not already present.")]
+        [Description("Enables the Astronomy system (opt-in, persisted) and places the fixed world objects (Willebrord, tent, telescope, orrery, ledger, primer) if not already present.")]
         private static void Generate(CommandEventArgs e)
         {
-            if (!AstronomySystem.Enabled)
-            {
-                e.Mobile.SendMessage("Astronomy is disabled (requires Core.TOL); not generating.");
-                return;
-            }
+            // Like the Factions generator, running this opts the system in (and persists the setting).
+            AstronomySystem.Enable();
 
             var placed = PlaceAll();
-            e.Mobile.SendMessage($"Astronomy: placed {placed} missing object(s).");
+            e.Mobile.SendMessage($"Astronomy: enabled; placed {placed} missing object(s).");
         }
 
         /// <summary>

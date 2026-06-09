@@ -20,8 +20,9 @@ namespace Server.Engines.Astronomy
     {
         private static readonly ILogger logger = LogFactory.GetLogger(typeof(AstronomySystem));
 
-        // era gate (CLAUDE.md rule 11): Astronomy ~Pub 86; Core.TOL is the conservative modern-content flag
-        public static bool Enabled { get; private set; } = Core.TOL;
+        // Opt-in like Factions: disabled by default, toggled via the "astronomy.enabled" server setting
+        // (read in Configure, or flipped at runtime by Enable/Disable). [GenAstronomy] calls Enable().
+        public static bool Enabled { get; private set; }
 
         public static readonly int MaxConstellations = 1000;
         public static readonly int MaxRA = 24;
@@ -40,21 +41,56 @@ namespace Server.Engines.Astronomy
 
         public static void Configure()
         {
+            Enabled = ServerConfiguration.GetSetting("astronomy.enabled", false);
+
+            if (Enabled)
+            {
+                Instance = new AstronomySystem();
+                BuildInterstellarObjects();
+            }
+        }
+
+        public static void Initialize()
+        {
+            if (Enabled && Constellations.Count < MaxConstellations)
+            {
+                CreateConstellations(MaxConstellations - Constellations.Count);
+            }
+        }
+
+        // Opt-in at runtime (mirrors Factions). Registers persistence, persists the setting,
+        // and generates the constellation set if it has not been built yet. Called by [GenAstronomy].
+        public static void Enable()
+        {
+            if (Enabled)
+            {
+                return;
+            }
+
+            Instance ??= new AstronomySystem();
+            Instance.Register();
+            BuildInterstellarObjects();
+            Enabled = true;
+            ServerConfiguration.SetSetting("astronomy.enabled", true);
+
+            if (Constellations.Count < MaxConstellations)
+            {
+                CreateConstellations(MaxConstellations - Constellations.Count);
+            }
+        }
+
+        // Turns off persistence and the setting. Does not remove already-placed world content
+        // (use [DelAstronomy] for that) or wipe discovered constellations.
+        public static void Disable()
+        {
             if (!Enabled)
             {
                 return;
             }
 
-            Instance = new AstronomySystem();
-            BuildInterstellarObjects();
-        }
-
-        public static void Initialize()
-        {
-            if (Enabled && LoadedConstellations < MaxConstellations)
-            {
-                CreateConstellations(MaxConstellations - LoadedConstellations);
-            }
+            Instance?.Unregister();
+            Enabled = false;
+            ServerConfiguration.SetSetting("astronomy.enabled", false);
         }
 
         private static void BuildInterstellarObjects()
@@ -129,7 +165,9 @@ namespace Server.Engines.Astronomy
 
         public static ConstellationInfo GetConstellation(int id)
         {
-            return Constellations.FirstOrDefault(info => info.Identifier == id);
+            // Identifier is assigned as the list index on creation and preserved across save/load,
+            // so this is an O(1) lookup rather than an O(N) scan.
+            return id >= 0 && id < Constellations.Count ? Constellations[id] : null;
         }
 
         public static ConstellationInfo GetConstellation(TimeCoordinate p, int ra, double dec)
