@@ -1929,6 +1929,7 @@ namespace Server.Mobiles
                 if (Alive)
                 {
                     list.Add(new CallbackEntry(6210, ToggleChampionTitleDisplay));
+                    list.Add(new TitlesMenuEntry(this));
                 }
 
                 if (Core.HS)
@@ -3446,6 +3447,19 @@ namespace Server.Mobiles
                 if (titleLabel > 0)
                 {
                     list.Add(titleLabel);
+                }
+            }
+
+            var rewardTitle = Server.Engines.RewardTitles.RewardTitleSystem.GetSelectedTitle(this);
+            if (rewardTitle != null)
+            {
+                if (rewardTitle.Number > 0)
+                {
+                    list.Add(rewardTitle.Number);
+                }
+                else if (rewardTitle.String != null)
+                {
+                    list.Add(1070722, rewardTitle.String); // ~1_val~
                 }
             }
 
