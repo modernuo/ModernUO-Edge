@@ -36,7 +36,7 @@ public abstract partial class BaseRewardTitleDeed : Item
 
         if (RewardTitleSystem.AddTitle(pm, Title))
         {
-            pm.SendLocalizedMessage(1155605, Title.ToString()); // Thou hath been bestowed the title ~1_TITLE~!
+            pm.SendLocalizedMessage(1155605, Title.ToString()); // Thou hath been bestowed the title ~1_TITLE~! (Title.ToString() yields "#cliloc" which the client resolves, or the raw string)
             Delete();
         }
         else
@@ -48,6 +48,6 @@ public abstract partial class BaseRewardTitleDeed : Item
     public override void GetProperties(IPropertyList list)
     {
         base.GetProperties(list);
-        list.Add(1114057, Title.ToString()); // ~1_NOTHING~
+        list.Add(1114057, Title.ToString()); // ~1_NOTHING~ (Title.ToString() yields "#cliloc" the client resolves, or the raw string)
     }
 }
