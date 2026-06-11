@@ -5,7 +5,7 @@ using Server.Mobiles;
 
 namespace Server.Items;
 
-[SerializationGenerator(0, false)]
+[SerializationGenerator(0)]
 public abstract partial class BaseRewardTitleDeed : Item
 {
     public override int LabelNumber => 1155604; // A Deed for a Reward Title
