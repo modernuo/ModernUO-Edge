@@ -91,7 +91,7 @@ public partial class Willebrord : BaseVendor
                             AstronomySystem.AddDiscovery(info);
 
                             m.AddToBackpack(new RecipeScroll(465));
-                            // AstronomerTitleDeed reward deferred — Edge has no RewardTitle system yet (tracked in migration status doc).
+                            m.AddToBackpack(new AstronomerTitleDeed());
                         }
                     }
                 }
