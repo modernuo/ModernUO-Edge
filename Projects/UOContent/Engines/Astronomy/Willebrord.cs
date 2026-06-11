@@ -99,7 +99,7 @@ public partial class Willebrord : BaseVendor
         }
         else
         {
-            SayTo(m, 1158529); // What's this? I haven't time for this! Star Charts only please!
+            SayTo(m, 1158529, 1163); // What's this? I haven't time for this! Star Charts only please!
         }
 
         // Returns false (chart NOT consumed) to match ServUO. Re-submission is harmless: the constellation is flagged discovered on first success, so no second reward is granted.
