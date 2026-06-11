@@ -178,6 +178,15 @@ public class TitlesGump : DynamicGump
 
         var titles = ctx.TitleList;
         const int perPage = 9;
+        var maxPage = titles.Count > 0 ? (titles.Count - 1) / perPage : 0;
+        if (_page > maxPage)
+        {
+            _page = maxPage;
+        }
+        if (_page < 0)
+        {
+            _page = 0;
+        }
         var start = _page * perPage;
 
         // First row: "Hide title" -> APPLY button id 5000 (selects -1).
@@ -200,7 +209,8 @@ public class TitlesGump : DynamicGump
                 builder.AddHtml(260, y, 245, 16, td.String, "#FFFFFF");
             }
 
-            // Per-row APPLY button id = 6000 + i (recover index = id - 6000 in OnResponse).
+            // Per-row APPLY button id = 6000 + i (absolute index); reward-title counts are small,
+            // well below the 10001 type-button range. Recover index = id - 6000 in OnResponse.
             builder.AddButton(225, y, 4005, 4007, 6000 + i);
         }
 
@@ -221,12 +231,14 @@ public class TitlesGump : DynamicGump
     private void BuildChampion(ref DynamicGumpBuilder builder)
     {
         var label = ChampionTitleSystem.GetChampionTitleLabel(_player);
-
-        if (label > 0)
+        if (label <= 0)
         {
-            builder.AddHtmlLocalized(225, 220, 160, 16, 1115027, 0xFFFF); // Paperdoll Name (Suffix)
-            builder.AddHtmlLocalized(275, 240, 245, 32, label, 0xFFFF); // current champion title
+            _category = TitleCategory.None;
+            return;
         }
+
+        builder.AddHtmlLocalized(225, 220, 160, 16, 1115027, 0xFFFF); // Paperdoll Name (Suffix)
+        builder.AddHtmlLocalized(275, 240, 245, 32, label, 0xFFFF); // current champion title
 
         // Toggle button id 5200 -> shows/hides via _player.DisplayChampionTitle.
         builder.AddHtmlLocalized(225, 275, 200, 16, _player.DisplayChampionTitle ? 1062419 : 1062418, 0xFFFF); // hide / display
