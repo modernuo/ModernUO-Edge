@@ -1,0 +1,24 @@
+{
+  "version": 0,
+  "type": "Server.Engines.RewardTitles.RewardTitleContext",
+  "properties": [
+    {
+      "name": "Titles",
+      "type": "System.Collections.Generic.List\u003CServer.TextDefinition\u003E",
+      "rule": "ListMigrationRule",
+      "ruleArguments": [
+        "Server.TextDefinition",
+        "PrimitiveUOTypeMigrationRule",
+        "TextDefinition"
+      ]
+    },
+    {
+      "name": "Selected",
+      "type": "int",
+      "rule": "PrimitiveTypeMigrationRule",
+      "ruleArguments": [
+        ""
+      ]
+    }
+  ]
+}
