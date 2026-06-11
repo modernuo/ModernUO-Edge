@@ -15,6 +15,7 @@ using Server.Engines.MLQuests;
 using Server.Engines.MLQuests.Gumps;
 using Server.Engines.PartySystem;
 using Server.Engines.PlayerMurderSystem;
+using Server.Engines.RewardTitles;
 using Server.Engines.Quests;
 using Server.Engines.Virtues;
 using Server.Ethics;
@@ -3450,7 +3451,7 @@ namespace Server.Mobiles
                 }
             }
 
-            var rewardTitle = Server.Engines.RewardTitles.RewardTitleSystem.GetSelectedTitle(this);
+            var rewardTitle = RewardTitleSystem.GetSelectedTitle(this);
             if (rewardTitle != null)
             {
                 if (rewardTitle.Number > 0)
