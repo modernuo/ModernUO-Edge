@@ -38,7 +38,7 @@ public abstract partial class BaseRewardTitleDeed : Item
         {
             if (Title.Number > 0)
             {
-                pm.SendLocalizedMessage(1155605, $"{Title.Number:#}"); // Thou hath been bestowed the title ~1_TITLE~!
+                pm.SendLocalizedMessage(1155605, $"#{Title.Number}"); // Thou hath been bestowed the title ~1_TITLE~!
             }
             else
             {
