@@ -27,7 +27,7 @@ public static class PointsCommands
                 return;
             }
 
-            from.SendMessage($"{"Points for"} {pm.Name}:");
+            from.SendMessage($"Points for {pm.Name}:");
             var systems = PointsSystem.AllSystems;
             for (var i = 0; i < systems.Count; i++)
             {
@@ -49,7 +49,7 @@ public static class PointsCommands
     {
         if (e.Length < 2 || !Enum.TryParse<PointsType>(e.GetString(0), true, out var type))
         {
-            e.Mobile.SendMessage($"{"Usage:"} [{(award ? "Award" : "Deduct")}Points <PointsType> <amount>");
+            e.Mobile.SendMessage($"Usage: [{(award ? "Award" : "Deduct")}Points <PointsType> <amount>");
             return;
         }
 
@@ -57,7 +57,7 @@ public static class PointsCommands
         var system = PointsSystem.GetSystemInstance(type);
         if (system == null)
         {
-            e.Mobile.SendMessage($"{"No registered points system for"} {type}.");
+            e.Mobile.SendMessage($"No registered points system for {type}.");
             return;
         }
 
@@ -73,16 +73,19 @@ public static class PointsCommands
             if (award)
             {
                 system.AwardPoints(pm, amount, false, false);
-                from.SendMessage($"{"Awarded"} {amount} {type} {"points to"} {pm.Name}; {"total"} {system.GetPoints(pm)}.");
+                from.SendMessage($"Awarded {amount} {type} points to {pm.Name}; total {system.GetPoints(pm)}.");
             }
             else
             {
                 var ok = system.DeductPoints(pm, amount);
-                from.SendMessage(
-                    ok
-                        ? $"{"Deducted"} {amount} {type} {"points from"} {pm.Name}; {"total"} {system.GetPoints(pm)}."
-                        : $"{pm.Name} {"does not have"} {amount} {type} {"points to deduct"}."
-                );
+                if (ok)
+                {
+                    from.SendMessage($"Deducted {amount} {type} points from {pm.Name}; total {system.GetPoints(pm)}.");
+                }
+                else
+                {
+                    from.SendMessage($"{pm.Name} does not have {amount} {type} points to deduct.");
+                }
             }
         });
     }
