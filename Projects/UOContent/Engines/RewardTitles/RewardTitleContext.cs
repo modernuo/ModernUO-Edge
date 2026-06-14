@@ -8,7 +8,6 @@ namespace Server.Engines.RewardTitles;
 [SerializationGenerator(0)]
 public partial class RewardTitleContext
 {
-    // Lazily allocated — null until the player earns their first title.
     [CanBeNull]
     [SerializableField(0, setter: "private")]
     private List<TextDefinition> _titles;
