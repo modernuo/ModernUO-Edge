@@ -65,6 +65,11 @@ public abstract class PointsSystem : GenericPersistence
             return false;
         }
 
+        if (points <= 0)
+        {
+            return false;
+        }
+
         var entry = GetEntry(pm);
         if (entry == null || entry.Points < points)
         {
@@ -138,6 +143,8 @@ public abstract class PointsSystem : GenericPersistence
         return entry;
     }
 
+    // Called during deserialization with a possibly-null player (deleted-player save records).
+    // Overrides must tolerate a null pm; the base Deserialize discards the entry afterward if the player is gone.
     protected virtual PointsEntry CreateEntry(PlayerMobile pm) => new(pm);
 
     public virtual void OnPlayerAdded(PlayerMobile pm)
