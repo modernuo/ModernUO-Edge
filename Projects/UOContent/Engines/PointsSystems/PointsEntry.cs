@@ -21,7 +21,7 @@ public class PointsEntry
         Points = points;
     }
 
-    public override bool Equals(object obj) => obj is PointsEntry other && other.Player == Player;
+    public override bool Equals(object obj) => obj is PointsEntry other && Player != null && other.Player == Player;
 
     public override int GetHashCode() => Player?.GetHashCode() ?? 0;
 
