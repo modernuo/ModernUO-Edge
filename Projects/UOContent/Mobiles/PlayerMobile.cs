@@ -1930,7 +1930,7 @@ namespace Server.Mobiles
                 if (Alive)
                 {
                     list.Add(new CallbackEntry(6210, ToggleChampionTitleDisplay));
-                    list.Add(new TitlesMenuEntry(this));
+                    list.Add(new TitlesMenuEntry());
                 }
 
                 if (Core.HS)
@@ -3460,7 +3460,7 @@ namespace Server.Mobiles
                 }
                 else if (rewardTitle.String != null)
                 {
-                    list.Add(1070722, rewardTitle.String); // ~1_val~
+                    list.Add(rewardTitle.String);
                 }
             }
 

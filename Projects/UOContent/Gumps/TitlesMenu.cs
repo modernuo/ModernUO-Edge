@@ -340,23 +340,18 @@ public class TitlesGump : DynamicGump
                 }
         }
 
-        // Re-send this instance (Singleton replaces the open one) to preserve
-        // the held _type/_category/_page state across refreshes.
         _player.SendGump(this);
     }
 }
 
 public class TitlesMenuEntry : ContextMenuEntry
 {
-    private readonly PlayerMobile _from;
-
-    public TitlesMenuEntry(PlayerMobile from) : base(1115022, -1) // Open Titles Menu
+    public TitlesMenuEntry() : base(1115022, -1) // Open Titles Menu
     {
-        _from = from;
     }
 
     public override void OnClick(Mobile from, IEntity target)
     {
-        TitlesGump.DisplayTo(_from);
+        TitlesGump.DisplayTo(from);
     }
 }

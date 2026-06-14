@@ -53,7 +53,11 @@ public partial class RewardTitleContext
 
     public void Select(int index)
     {
-        if (index >= -1 && (_titles == null ? index == -1 : index < _titles.Count))
+        if (index <= -1 || _titles == null)
+        {
+            _selected = -1;
+        }
+        else if (index < _titles.Count)
         {
             _selected = index;
         }

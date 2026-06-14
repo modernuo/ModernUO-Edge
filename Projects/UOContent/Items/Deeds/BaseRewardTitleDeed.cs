@@ -18,11 +18,6 @@ public abstract partial class BaseRewardTitleDeed : Item
 
     public override void OnDoubleClick(Mobile from)
     {
-        if (from is not PlayerMobile pm)
-        {
-            return;
-        }
-
         if (!IsChildOf(pm.Backpack))
         {
             pm.SendLocalizedMessage(1042001); // That must be in your pack for you to use it.
