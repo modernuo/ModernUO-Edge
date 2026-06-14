@@ -87,7 +87,7 @@ public abstract class PointsSystem : GenericPersistence
         if (quest)
         {
             // You have received ~1_val~ loyalty points as a reward for completing the quest.
-            from.SendLocalizedMessage(1113719, ((int)points).ToString(), 0x26);
+            from.SendLocalizedMessage(1113719, $"{(int)points}", 0x26);
         }
         else
         {
