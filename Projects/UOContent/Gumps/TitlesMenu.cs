@@ -352,6 +352,9 @@ public class TitlesMenuEntry : ContextMenuEntry
 
     public override void OnClick(Mobile from, IEntity target)
     {
-        TitlesGump.DisplayTo(from);
+        if (from is PlayerMobile pm)
+        {
+            TitlesGump.DisplayTo(pm);
+        }
     }
 }
