@@ -7,8 +7,10 @@
       "type": "System.Collections.Generic.List\u003CServer.TextDefinition\u003E",
       "rule": "ListMigrationRule",
       "ruleArguments": [
+        "@CanBeNull",
         "Server.TextDefinition",
         "PrimitiveUOTypeMigrationRule",
+        "@CanBeNull",
         "TextDefinition"
       ]
     },

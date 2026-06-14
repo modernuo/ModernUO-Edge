@@ -57,11 +57,11 @@ public abstract partial class BaseRewardTitleDeed : Item
         base.GetProperties(list);
         if (Title.Number > 0)
         {
-            list.Add(1114057, $"{Title.Number:#}"); // ~1_NOTHING~
+            list.Add(Title.Number);
         }
         else if (Title.String != null)
         {
-            list.Add(1114057, $"{Title.String}"); // ~1_NOTHING~
+            list.Add(Title.String);
         }
     }
 }

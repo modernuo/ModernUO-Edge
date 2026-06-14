@@ -8,6 +8,8 @@ namespace Server.Engines.RewardTitles;
 [SerializationGenerator(0)]
 public partial class RewardTitleContext
 {
+    // Lazily allocated — null until the player earns their first title.
+    [CanBeNull]
     [SerializableField(0, setter: "private")]
     private List<TextDefinition> _titles;
 
@@ -22,20 +24,26 @@ public partial class RewardTitleContext
     public RewardTitleContext(PlayerMobile player)
     {
         _player = player;
-        _titles = new List<TextDefinition>();
         _selected = -1;
     }
 
-    public IReadOnlyList<TextDefinition> TitleList => _titles;
+    public IReadOnlyList<TextDefinition> TitleList => _titles ?? (IReadOnlyList<TextDefinition>)[];
 
     public TextDefinition SelectedTitle =>
-        _selected >= 0 && _selected < _titles.Count ? _titles[_selected] : null;
+        _titles != null && _selected >= 0 && _selected < _titles.Count ? _titles[_selected] : null;
 
     public override string ToString() => "Reward Titles";
 
     public bool Add(TextDefinition title)
     {
-        if (title == null || title.IsEmpty || _titles.Contains(title))
+        if (title == null || title.IsEmpty)
+        {
+            return false;
+        }
+
+        _titles ??= new List<TextDefinition>();
+
+        if (_titles.Contains(title))
         {
             return false;
         }
@@ -46,7 +54,7 @@ public partial class RewardTitleContext
 
     public void Select(int index)
     {
-        if (index >= -1 && index < _titles.Count)
+        if (index >= -1 && (_titles == null ? index == -1 : index < _titles.Count))
         {
             _selected = index;
         }
@@ -54,7 +62,7 @@ public partial class RewardTitleContext
 
     public bool Remove(TextDefinition title)
     {
-        var idx = _titles.IndexOf(title);
+        var idx = _titles?.IndexOf(title) ?? -1;
         if (idx < 0)
         {
             return false;
