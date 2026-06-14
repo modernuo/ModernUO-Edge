@@ -49,7 +49,14 @@ public static class PointsCommands
     {
         if (e.Length < 2 || !Enum.TryParse<PointsType>(e.GetString(0), true, out var type))
         {
-            e.Mobile.SendMessage($"Usage: [{(award ? "Award" : "Deduct")}Points <PointsType> <amount>");
+            if (award)
+            {
+                e.Mobile.SendMessage($"Usage: [AwardPoints <PointsType> <amount>");
+            }
+            else
+            {
+                e.Mobile.SendMessage($"Usage: [DeductPoints <PointsType> <amount>");
+            }
             return;
         }
 

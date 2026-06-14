@@ -39,7 +39,11 @@ public abstract class PointsSystem : GenericPersistence
         return null;
     }
 
-    public static bool RemoveSystem(PointsSystem system) => _allSystems.Remove(system);
+    public static bool RemoveSystem(PointsSystem system)
+    {
+        system.Unregister();
+        return _allSystems.Remove(system);
+    }
 
     public double GetPoints(Mobile from) => GetEntry(from)?.Points ?? 0.0;
 
