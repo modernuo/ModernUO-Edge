@@ -39,6 +39,8 @@ public abstract class PointsSystem : GenericPersistence
         return null;
     }
 
+    public static bool RemoveSystem(PointsSystem system) => _allSystems.Remove(system);
+
     public double GetPoints(Mobile from) => GetEntry(from)?.Points ?? 0.0;
 
     public virtual void AwardPoints(Mobile from, double points, bool quest = false, bool message = true)

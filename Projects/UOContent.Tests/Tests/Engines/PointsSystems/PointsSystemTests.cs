@@ -28,7 +28,7 @@ public sealed class PointsSystemFixture
     }
 }
 
-public class PointsSystemTests : IClassFixture<PointsSystemFixture>
+public class PointsSystemTests : IClassFixture<PointsSystemFixture>, IDisposable
 {
     // A test-only system: AutoAdd, finite cap to exercise clamping.
     private sealed class TestPoints : PointsSystem
@@ -48,6 +48,11 @@ public class PointsSystemTests : IClassFixture<PointsSystemFixture>
     private static PlayerMobile NewPlayer(uint serial) => new((Serial)serial);
 
     private readonly TestPoints _sys = new();
+
+    public void Dispose()
+    {
+        PointsSystem.RemoveSystem(_sys);
+    }
 
     [Fact]
     public void Award_AccumulatesAndClampsToMax()
