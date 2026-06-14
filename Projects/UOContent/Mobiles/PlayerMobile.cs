@@ -15,6 +15,7 @@ using Server.Engines.MLQuests;
 using Server.Engines.MLQuests.Gumps;
 using Server.Engines.PartySystem;
 using Server.Engines.PlayerMurderSystem;
+using Server.Engines.RewardTitles;
 using Server.Engines.Quests;
 using Server.Engines.Virtues;
 using Server.Ethics;
@@ -1929,6 +1930,7 @@ namespace Server.Mobiles
                 if (Alive)
                 {
                     list.Add(new CallbackEntry(6210, ToggleChampionTitleDisplay));
+                    list.Add(new TitlesMenuEntry());
                 }
 
                 if (Core.HS)
@@ -3446,6 +3448,19 @@ namespace Server.Mobiles
                 if (titleLabel > 0)
                 {
                     list.Add(titleLabel);
+                }
+            }
+
+            var rewardTitle = RewardTitleSystem.GetSelectedTitle(this);
+            if (rewardTitle != null)
+            {
+                if (rewardTitle.Number > 0)
+                {
+                    list.Add(rewardTitle.Number);
+                }
+                else if (rewardTitle.String != null)
+                {
+                    list.Add(rewardTitle.String);
                 }
             }
 

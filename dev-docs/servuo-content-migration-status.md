@@ -16,7 +16,7 @@ follow-up work stays in one place. Each item names the system that first hit it;
 engine/foundation gaps that later systems will also need. Check off when closed and link the PR.
 
 - [ ] **`WorkableGlass` + SA glassblowing** — *(Astronomy)* `PersonalTelescope` Tinkering recipe omits the 1× `WorkableGlass` resource (currently `IronIngot ×25 + SextantParts ×1`) because the SA glassblowing resource/system isn't ported. **Close:** port glassblowing, then re-add the `AddRes(index, typeof(WorkableGlass), 1154170, 1, 1154171)` line in `DefTinkering.cs`.
-- [ ] **RewardTitle system** — *(Astronomy)* Edge has no reward-title infrastructure (`BaseRewardTitleDeed` absent), so `Willebrord`'s discovery reward grants only `RecipeScroll(465)`, dropping ServUO's `AstronomerTitleDeed`. **Close:** port a RewardTitle foundation, then restore the title-deed grant in `Willebrord.OnDragDrop`.
+- [x] **RewardTitle system** — *(Astronomy)* **Closed:** added `RewardTitleSystem` (GenericPersistence) + `RewardTitleContext` + `BaseRewardTitleDeed`/`AstronomerTitleDeed` + ported `TitlesGump` (RewardTitles functional, Champion as display toggle, FameKarma/Skills/Guild/Veteran deferred); restored Willebrord's `AstronomerTitleDeed` grant. Selected title renders on the paperdoll tooltip.
 - [ ] **Craft force-success mechanism** — *(Astronomy)* Edge's craft system has no `SetForceSuccess`; `StarChart` uses a skill-based `0.0–60.0` Cartography range instead of ServUO's flat 75%. **Close:** add a force-success option to the craft engine (or decide skill-based is the desired behavior).
 - [x] **`SayTo` hue overload** — *(Astronomy)* ~~Edge `Mobile.SayTo` had no hued localized overload, so `Willebrord`'s "Star Charts only" line dropped ServUO's `1163` hue.~~ **Closed:** added the overload upstream (modernuo/ModernUO PR #2481), cherry-picked it here, and restored `SayTo(m, 1158529, 1163)` in `Willebrord`.
 
@@ -28,7 +28,7 @@ Ported files (`Projects/UOContent/Engines/Astronomy/`): `AstronomySystem` (Gener
 
 **Opt-in (like Factions):** disabled by default. `AstronomySystem.Configure()` reads `ServerConfiguration.GetSetting("astronomy.enabled", false)`; when off, no persistence/singleton is registered and the static helpers are NPE-safe (operate on empty lists). `AstronomySystem.Enable()`/`Disable()` toggle at runtime and persist the setting (Register/Unregister the `GenericPersistence`). `[GenAstronomy]` calls `Enable()` then places the world content (mirrors the Factions generator). No era gate — content uses ~Pub 86 clilocs, so a reasonably modern client is needed, but enablement is the admin's choice.
 
-Its accepted divergences and deferred items are tracked in the **Known gaps & future efforts** backlog above (`WorkableGlass`/glassblowing, RewardTitle/`AstronomerTitleDeed`, craft force-success, `SayTo` hue).
+Its accepted divergences and deferred items are tracked in the **Known gaps & future efforts** backlog above (`WorkableGlass`/glassblowing, craft force-success, `SayTo` hue). `RewardTitle`/`AstronomerTitleDeed` is closed (see backlog above).
 
 ### Verification status
 - ✅ `dotnet build` (full solution): 0 warnings, 0 errors.
