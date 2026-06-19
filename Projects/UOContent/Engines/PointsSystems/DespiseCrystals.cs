@@ -6,13 +6,16 @@ public class DespiseCrystals : PointsSystem
 {
     private static DespiseCrystals _instance;
 
+    private static readonly TextDefinition _name = TextDefinition.Of(1151673);
+    private static readonly TextDefinition _title = TextDefinition.Of(1123418);
+
     public static void Configure()
     {
         _instance = new DespiseCrystals();
     }
 
     public override PointsType Loyalty => PointsType.DespiseCrystals;
-    public override TextDefinition Name => TextDefinition.Of(1151673);
+    public override TextDefinition Name => _name;
     public override bool AutoAdd => true;
     public override double MaxPoints => double.MaxValue;
 
@@ -26,7 +29,7 @@ public class DespiseCrystals : PointsSystem
         from.SendLocalizedMessage(1153423, $"{(int)points}");
     }
 
-    public override TextDefinition GetTitle(PlayerMobile from) => TextDefinition.Of(1123418);
+    public override TextDefinition GetTitle(PlayerMobile from) => _title;
 
     public override void Serialize(IGenericWriter writer)
     {
