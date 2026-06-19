@@ -8,6 +8,7 @@ Status legend: ✅ Ported · 🔄 In progress · ⏳ Planned · ⛔ Deferred/blo
 | Feature | Era | Status | PR | Dependencies | Notes |
 |---|---|---|---|---|---|
 | **Astronomy** (telescope constellation minigame) | ~Pub 86; **opt-in** (`astronomy.enabled`, default off) | ✅ Ported (pilot) | PR #1 | Cartography (present), Tinkering (present), `SextantParts` (present) | First migration PR. See divergences/deferrals below. |
+| **PointsSystem** (per-player points/loyalty foundation) | era-agnostic | ✅ Ported (foundation) | _PR_ | `GenericPersistence` | Phase-0 foundation gating ~half the remaining catalog (Void Pool, Clean Up Britannia, City Loyalty, Casino, Blackthorn, VvV, PVP Arena, seasonal events…). Abstract `PointsSystem : GenericPersistence` + `Dictionary` store + `PointsType` registry + `PointsEntry`; trivial `DespiseCrystals`/`ShameCrystals` validation systems + `[Points`/`[AwardPoints`/`[DeductPoints` GM commands. Kill/quest auto-award hooks and heavy consumers are follow-ups. (DespiseCrystals/ShameCrystals share `Name` cliloc 1151673 — faithful to ServUO.) |
 
 ## Known gaps & future efforts (backlog)
 
