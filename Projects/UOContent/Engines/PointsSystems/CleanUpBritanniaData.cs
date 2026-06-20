@@ -80,6 +80,7 @@ public class CleanUpBritanniaData : PointsSystem
         [typeof(SpinedLeather)] = 0.50,
         [typeof(HornedLeather)] = 1.0,
         [typeof(BarbedLeather)] = 2.0,
+        // Fur omitted — not in Edge
 
         // BOD Rewards
         [typeof(Sandals)] = 2.0,

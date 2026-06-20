@@ -34,14 +34,14 @@ public partial class TrashChest : Container
         {
             PublicOverheadMessage(MessageType.Regular, 0x3B2, Utility.Random(1042891, 8));
 
-            if (CleanUpBritanniaData.Enabled && from != null)
+            if (CleanUpBritanniaData.Enabled && from is PlayerMobile player)
             {
                 var points = CleanUpBritanniaData.GetPoints(dropped);
                 if (points > 0)
                 {
-                    CleanUpBritanniaData.Instance?.AwardPoints(from, points, false, false);
+                    CleanUpBritanniaData.Instance?.AwardPoints(player, points, false, false);
                     // You have received approximately ~1_VALUE~ points for turning in ~2_COUNT~ items for Clean Up Britannia.
-                    from.SendLocalizedMessage(1151280, $"{(int)points}\t1");
+                    player.SendLocalizedMessage(1151280, $"{(int)points}\t1");
                 }
             }
 
@@ -58,14 +58,14 @@ public partial class TrashChest : Container
         {
             PublicOverheadMessage(MessageType.Regular, 0x3B2, Utility.Random(1042891, 8));
 
-            if (CleanUpBritanniaData.Enabled && from != null)
+            if (CleanUpBritanniaData.Enabled && from is PlayerMobile player)
             {
                 var points = CleanUpBritanniaData.GetPoints(item);
                 if (points > 0)
                 {
-                    CleanUpBritanniaData.Instance?.AwardPoints(from, points, false, false);
+                    CleanUpBritanniaData.Instance?.AwardPoints(player, points, false, false);
                     // You have received approximately ~1_VALUE~ points for turning in ~2_COUNT~ items for Clean Up Britannia.
-                    from.SendLocalizedMessage(1151280, $"{(int)points}\t1");
+                    player.SendLocalizedMessage(1151280, $"{(int)points}\t1");
                 }
             }
 

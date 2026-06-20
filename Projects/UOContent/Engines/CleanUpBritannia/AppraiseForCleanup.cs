@@ -6,19 +6,16 @@ namespace Server.Engines.CleanUpBritannia;
 
 public class AppraiseForCleanupEntry : ContextMenuEntry
 {
-    private readonly Mobile _from;
-
     public AppraiseForCleanupEntry(Mobile from) : base(1151298, 2) // Appraise for Cleanup
     {
-        _from = from;
     }
 
     public override void OnClick(Mobile from, IEntity target)
     {
-        _from.Target = new AppraiseForCleanupTarget();
+        from.Target = new AppraiseForCleanupTarget();
 
         // Target items to see how many Clean Up Britannia points you will receive for throwing them away.
-        _from.SendLocalizedMessage(1151299);
+        from.SendLocalizedMessage(1151299);
     }
 }
 
