@@ -1,5 +1,11 @@
 using System;
+using System.Collections.Generic;
 using ModernUO.Serialization;
+using Server.Collections;
+using Server.ContextMenus;
+using Server.Engines.CleanUpBritannia;
+using Server.Engines.Points;
+using Server.Mobiles;
 using Server.Multis;
 
 namespace Server.Items;
@@ -8,6 +14,9 @@ namespace Server.Items;
 public partial class TrashBarrel : Container, IChoppable
 {
     private Timer _timer;
+
+    // CUB: in-memory only; in-flight points are not persisted across a restart (documented divergence).
+    private readonly Dictionary<Item, (Mobile Dropper, double Points)> _cleanup = new();
 
     [Constructible]
     public TrashBarrel() : base(0xE77)
@@ -21,6 +30,16 @@ public partial class TrashBarrel : Container, IChoppable
     public override int DefaultMaxWeight => 0; // A value of 0 signals unlimited weight
 
     public override bool IsDecoContainer => false;
+
+    public override void GetContextMenuEntries(Mobile from, ref PooledRefList<ContextMenuEntry> list)
+    {
+        base.GetContextMenuEntries(from, ref list);
+
+        if (CleanUpBritanniaData.Enabled && from is PlayerMobile)
+        {
+            list.Add(new AppraiseForCleanupEntry(from));
+        }
+    }
 
     public void OnChop(Mobile from)
     {
@@ -72,6 +91,7 @@ public partial class TrashBarrel : Container, IChoppable
         if (base.OnDragDrop(from, dropped))
         {
             InvalidateContents(from);
+            AccumulateCleanup(from, dropped);
             return true;
         }
 
@@ -83,6 +103,7 @@ public partial class TrashBarrel : Container, IChoppable
         if (base.OnDragDropInto(from, item, p))
         {
             InvalidateContents(from);
+            AccumulateCleanup(from, item);
             return true;
         }
 
@@ -95,6 +116,7 @@ public partial class TrashBarrel : Container, IChoppable
 
         if (items.Count > 0)
         {
+            AwardCleanup();
             PublicOverheadMessage(MessageType.Regular, 0x3B2, message);
 
             for (var i = items.Count - 1; i >= 0; --i)
@@ -110,6 +132,53 @@ public partial class TrashBarrel : Container, IChoppable
 
         _timer?.Stop();
         _timer = null;
+    }
+
+    private void AccumulateCleanup(Mobile from, Item item)
+    {
+        if (!CleanUpBritanniaData.Enabled || from == null)
+        {
+            return;
+        }
+
+        var points = CleanUpBritanniaData.GetPoints(item);
+
+        if (points > 0)
+        {
+            _cleanup[item] = (from, points);
+        }
+    }
+
+    private void AwardCleanup()
+    {
+        if (_cleanup.Count == 0)
+        {
+            return;
+        }
+
+        // Sum per-dropper for items still in this barrel.
+        var totals = new Dictionary<Mobile, (double Points, int Count)>();
+
+        foreach (var (item, info) in _cleanup)
+        {
+            if (item.Deleted || !item.IsChildOf(this) || info.Dropper?.Deleted != false)
+            {
+                continue;
+            }
+
+            var cur = totals.TryGetValue(info.Dropper, out var t) ? t : default;
+            totals[info.Dropper] = (cur.Points + info.Points, cur.Count + 1);
+        }
+
+        foreach (var (dropper, t) in totals)
+        {
+            CleanUpBritanniaData.Instance?.AwardPoints(dropper, t.Points, false, false);
+
+            // You have received approximately ~1_VALUE~ points for turning in ~2_COUNT~ items for Clean Up Britannia.
+            dropper.SendLocalizedMessage(1151280, $"{(int)t.Points}\t{t.Count}");
+        }
+
+        _cleanup.Clear();
     }
 
     private class EmptyTimer : Timer

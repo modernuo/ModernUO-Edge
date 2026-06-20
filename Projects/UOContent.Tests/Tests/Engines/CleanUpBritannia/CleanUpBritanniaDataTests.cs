@@ -164,4 +164,22 @@ public class CleanUpBritanniaDataTests : IClassFixture<CleanUpBritanniaFixture>,
             rock.Delete();
         }
     }
+
+    [Fact]
+    public void TurnIn_AwardsDropperPointsForItemValue()
+    {
+        var pm = NewPlayer(0x20200);
+        var ingots = new Server.Items.IronIngot(100); // 10 points
+        try
+        {
+            // Simulate the barrel-empty award path:
+            var pts = CleanUpBritanniaData.GetPoints(ingots);
+            _sys.AwardPoints(pm, pts, false, false);
+            Assert.Equal(10.0, _sys.GetPoints(pm), 3);
+        }
+        finally
+        {
+            ingots.Delete();
+        }
+    }
 }
