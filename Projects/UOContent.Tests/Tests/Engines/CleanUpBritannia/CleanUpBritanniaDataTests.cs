@@ -8,6 +8,13 @@ using Xunit;
 
 namespace UOContent.Tests;
 
+// All CleanUpBritannia test classes share static DecayScheduler state via CleanUpBritanniaFixture.
+// This collection definition forces them to run serially so the fixture init is not racy.
+[CollectionDefinition("Sequential CleanUpBritannia Tests", DisableParallelization = true)]
+public class CleanUpBritanniaTestCollection : ICollectionFixture<CleanUpBritanniaFixture>
+{
+}
+
 /// <summary>
 /// Minimal fixture for CleanUpBritannia tests.
 /// Bootstraps the subset of server infrastructure required to construct Item objects
@@ -61,7 +68,9 @@ public sealed class CleanUpBritanniaFixture
     }
 }
 
-public class CleanUpBritanniaDataTests : IClassFixture<CleanUpBritanniaFixture>, IDisposable
+// Prevent parallel execution with RewardsTests: they share static DecayScheduler state.
+[Collection("Sequential CleanUpBritannia Tests")]
+public class CleanUpBritanniaDataTests : IDisposable
 {
     private readonly CleanUpBritanniaData _sys = new();
 

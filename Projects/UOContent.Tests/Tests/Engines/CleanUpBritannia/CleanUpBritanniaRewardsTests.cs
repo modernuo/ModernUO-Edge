@@ -6,7 +6,9 @@ using Xunit;
 
 namespace UOContent.Tests;
 
-public class CleanUpBritanniaRewardsTests : IClassFixture<CleanUpBritanniaFixture>
+// Prevent parallel execution with DataTests: they share static DecayScheduler state.
+[Collection("Sequential CleanUpBritannia Tests")]
+public class CleanUpBritanniaRewardsTests
 {
     [Fact]
     public void Rewards_AreNonEmptyWithPositiveCosts()
