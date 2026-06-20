@@ -36,7 +36,7 @@ public class CleanUpBritanniaRewardsTests : IClassFixture<CleanUpBritanniaFixtur
 
             if (reward.Type == typeof(ScrollofAlacrity))
             {
-                item = new ScrollofAlacrity();
+                item = new ScrollofAlacrity { Skill = (SkillName)Utility.Random(SkillInfo.Table.Length) };
             }
             else
             {

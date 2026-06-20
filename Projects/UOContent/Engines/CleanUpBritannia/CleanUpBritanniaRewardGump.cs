@@ -7,7 +7,7 @@ using Server.Network;
 
 namespace Server.Engines.CleanUpBritannia;
 
-public class CleanUpBritanniaRewardGump : DynamicGump
+public sealed class CleanUpBritanniaRewardGump : DynamicGump
 {
     private const int RowHeight = 75;
     private const int RowTop = 90;
@@ -90,7 +90,7 @@ public class CleanUpBritanniaRewardGump : DynamicGump
     }
 }
 
-public class CleanUpBritanniaConfirmGump : BaseConfirmGump
+public sealed class CleanUpBritanniaConfirmGump : BaseConfirmGump
 {
     private readonly PlayerMobile _user;
     private readonly Mobile _owner;
@@ -157,7 +157,13 @@ public class CleanUpBritanniaConfirmGump : BaseConfirmGump
 
         if (backpack.TryDropItem(pm, item, false))
         {
-            data.DeductPoints(pm, reward.Cost);
+            if (!data.DeductPoints(pm, reward.Cost))
+            {
+                item.Delete(); // undo the just-delivered item
+                pm.SendLocalizedMessage(1074361); // The reward could not be given. Make sure you have room in your pack.
+                return;
+            }
+
             pm.SendLocalizedMessage(1073621); // Your reward has been placed in your backpack.
             pm.PlaySound(0x5A7);
 
@@ -167,6 +173,14 @@ public class CleanUpBritanniaConfirmGump : BaseConfirmGump
         {
             pm.SendLocalizedMessage(1074361); // The reward could not be given. Make sure you have room in your pack.
             item.Delete();
+        }
+    }
+
+    public override void Refuse(Mobile from)
+    {
+        if (from is PlayerMobile pm)
+        {
+            CleanUpBritanniaRewardGump.DisplayTo(pm, _owner);
         }
     }
 }
