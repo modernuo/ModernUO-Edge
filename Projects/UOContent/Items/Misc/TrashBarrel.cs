@@ -112,11 +112,12 @@ public partial class TrashBarrel : Container, IChoppable
 
     public void Empty(int message)
     {
+        AwardCleanup();
+
         var items = Items;
 
         if (items.Count > 0)
         {
-            AwardCleanup();
             PublicOverheadMessage(MessageType.Regular, 0x3B2, message);
 
             for (var i = items.Count - 1; i >= 0; --i)
@@ -172,10 +173,13 @@ public partial class TrashBarrel : Container, IChoppable
 
         foreach (var (dropper, t) in totals)
         {
-            CleanUpBritanniaData.Instance?.AwardPoints(dropper, t.Points, false, false);
+            if (CleanUpBritanniaData.Instance != null)
+            {
+                CleanUpBritanniaData.Instance.AwardPoints(dropper, t.Points, false, false);
 
-            // You have received approximately ~1_VALUE~ points for turning in ~2_COUNT~ items for Clean Up Britannia.
-            dropper.SendLocalizedMessage(1151280, $"{(int)t.Points}\t{t.Count}");
+                // You have received approximately ~1_VALUE~ points for turning in ~2_COUNT~ items for Clean Up Britannia.
+                dropper.SendLocalizedMessage(1151280, $"{(int)t.Points}\t{t.Count}");
+            }
         }
 
         _cleanup.Clear();
