@@ -624,10 +624,15 @@ public class CleanUpBritanniaData : PointsSystem
         switch (item)
         {
             case RunicHammer hammer:
+            {
                 return RunicHammerPoints(hammer);
+            }
             case RunicSewingKit sewing:
+            {
                 return RunicSewingPoints(sewing);
+            }
             case PowerScroll ps:
+            {
                 return ps.Value switch
                 {
                     105 => 50,
@@ -636,10 +641,14 @@ public class CleanUpBritanniaData : PointsSystem
                     120 => 2500,
                     _ => 0
                 };
+            }
             case ScrollofTranscendence sot:
+            {
                 return sot.Value / 0.1 * 2;
+            }
             // CUB-DEFER: Bait branch — Bait type not present in Edge (backlog: add fishing bait system)
             case TreasureMap tmap:
+            {
                 return tmap.Level switch
                 {
                     1 => 100,
@@ -648,10 +657,15 @@ public class CleanUpBritanniaData : PointsSystem
                     4 => 1000,
                     _ => 50
                 };
+            }
             case MonsterStatuette ms when ms.Type == MonsterStatuetteType.Slime:
+            {
                 return 5000;
+            }
             case BasePigmentsOfTokuno pigments:
+            {
                 return 500 * pigments.UsesRemaining;
+            }
         }
 
         // CUB-DEFER: ICombatEquipment/GetPointsForEquipment branch — deferred; Edge has no Imbuing.GetTotalWeight (backlog: add imbuing weight calc)

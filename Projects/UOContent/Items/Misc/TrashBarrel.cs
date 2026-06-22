@@ -16,7 +16,7 @@ public partial class TrashBarrel : Container, IChoppable
     private Timer _timer;
 
     // CUB: in-memory only; in-flight points are not persisted across a restart (documented divergence).
-    private readonly Dictionary<Item, (Mobile Dropper, double Points)> _cleanup = new();
+    private readonly Dictionary<Item, (Mobile Dropper, double Points)> _cleanup = [];
 
     [Constructible]
     public TrashBarrel() : base(0xE77)
@@ -37,7 +37,7 @@ public partial class TrashBarrel : Container, IChoppable
 
         if (CleanUpBritanniaData.Enabled && from is PlayerMobile)
         {
-            list.Add(new AppraiseForCleanupEntry(from));
+            list.Add(new AppraiseForCleanupEntry());
         }
     }
 
@@ -157,25 +157,29 @@ public partial class TrashBarrel : Container, IChoppable
             return;
         }
 
-        // Sum per-dropper for items still in this barrel.
-        var totals = new Dictionary<Mobile, (double Points, int Count)>();
+        var instance = CleanUpBritanniaData.Instance;
 
-        foreach (var (item, info) in _cleanup)
+        if (instance != null)
         {
-            if (item.Deleted || !item.IsChildOf(this) || info.Dropper?.Deleted != false)
+            // First pass aggregates per dropper (one summed message per dropper even when they
+            // turned in several items); the award pass then runs once per unique dropper.
+            // AwardPoints has no side effect on _cleanup, so the two passes are independent.
+            Dictionary<Mobile, (double Points, int Count)> totals = [];
+
+            foreach (var (item, info) in _cleanup)
             {
-                continue;
+                if (item.Deleted || !item.IsChildOf(this) || info.Dropper?.Deleted != false)
+                {
+                    continue;
+                }
+
+                var cur = totals.TryGetValue(info.Dropper, out var t) ? t : default;
+                totals[info.Dropper] = (cur.Points + info.Points, cur.Count + 1);
             }
 
-            var cur = totals.TryGetValue(info.Dropper, out var t) ? t : default;
-            totals[info.Dropper] = (cur.Points + info.Points, cur.Count + 1);
-        }
-
-        foreach (var (dropper, t) in totals)
-        {
-            if (CleanUpBritanniaData.Instance != null)
+            foreach (var (dropper, t) in totals)
             {
-                CleanUpBritanniaData.Instance.AwardPoints(dropper, t.Points, false, false);
+                instance.AwardPoints(dropper, t.Points, false, false);
 
                 // You have received approximately ~1_VALUE~ points for turning in ~2_COUNT~ items for Clean Up Britannia.
                 dropper.SendLocalizedMessage(1151280, $"{(int)t.Points}\t{t.Count}");

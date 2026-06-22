@@ -24,6 +24,7 @@ public partial class NestWithEggs : Item
     }
 }
 
+[Flippable(0x49C2, 0x49C1)]
 [SerializationGenerator(0)]
 public partial class TableLamp : Item
 {
@@ -31,11 +32,6 @@ public partial class TableLamp : Item
 
     [Constructible]
     public TableLamp() : base(0x49C2) => Weight = 1;
-
-    public override void OnDoubleClick(Mobile from)
-    {
-        ItemID = ItemID == 0x49C2 ? 0x49C1 : 0x49C2;
-    }
 }
 
 [SerializationGenerator(0)]

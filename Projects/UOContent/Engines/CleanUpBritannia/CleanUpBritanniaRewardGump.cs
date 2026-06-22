@@ -1,4 +1,3 @@
-using System;
 using Server.Engines.Points;
 using Server.Gumps;
 using Server.Items;
@@ -86,19 +85,17 @@ public sealed class CleanUpBritanniaRewardGump : DynamicGump
             return;
         }
 
-        pm.SendGump(new CleanUpBritanniaConfirmGump(pm, _owner, index));
+        pm.SendGump(new CleanUpBritanniaConfirmGump(_owner, index));
     }
 }
 
 public sealed class CleanUpBritanniaConfirmGump : BaseConfirmGump
 {
-    private readonly PlayerMobile _user;
     private readonly Mobile _owner;
     private readonly int _index;
 
-    public CleanUpBritanniaConfirmGump(PlayerMobile user, Mobile owner, int index)
+    public CleanUpBritanniaConfirmGump(Mobile owner, int index)
     {
-        _user = user;
         _owner = owner;
         _index = index;
     }
@@ -140,40 +137,43 @@ public sealed class CleanUpBritanniaConfirmGump : BaseConfirmGump
 
         Item item;
 
-        // ScrollofAlacrity has no true parameterless ctor (only an optional-arg one), which
-        // Activator.CreateInstance cannot satisfy, so construct it directly and randomize its skill.
+        // ScrollofAlacrity has no true parameterless ctor (only an optional-arg one), which the
+        // generic CreateInstance cannot satisfy, so construct it directly and randomize its skill.
         if (reward.Type == typeof(ScrollofAlacrity))
         {
             item = new ScrollofAlacrity { Skill = (SkillName)Utility.Random(SkillInfo.Table.Length) };
         }
-        else if (Activator.CreateInstance(reward.Type) is Item created)
-        {
-            item = created;
-        }
         else
         {
+            item = reward.Type.CreateInstance<Item>();
+
+            if (item == null)
+            {
+                return;
+            }
+        }
+
+        // Verify capacity without placing first, then deduct, then add (bypassing the re-check) —
+        // avoids placing the item, sending packets, then yanking it back out on failure.
+        if (!backpack.CheckHold(pm, item, false, true))
+        {
+            item.Delete();
+            pm.SendLocalizedMessage(1074361); // The reward could not be given. Make sure you have room in your pack.
             return;
         }
 
-        if (backpack.TryDropItem(pm, item, false))
+        if (!data.DeductPoints(pm, reward.Cost))
         {
-            if (!data.DeductPoints(pm, reward.Cost))
-            {
-                item.Delete(); // undo the just-delivered item
-                pm.SendLocalizedMessage(1074361); // The reward could not be given. Make sure you have room in your pack.
-                return;
-            }
-
-            pm.SendLocalizedMessage(1073621); // Your reward has been placed in your backpack.
-            pm.PlaySound(0x5A7);
-
-            CleanUpBritanniaRewardGump.DisplayTo(pm, _owner);
-        }
-        else
-        {
-            pm.SendLocalizedMessage(1074361); // The reward could not be given. Make sure you have room in your pack.
             item.Delete();
+            pm.SendLocalizedMessage(1074361); // The reward could not be given. Make sure you have room in your pack.
+            return;
         }
+
+        backpack.AddItem(item);
+        pm.SendLocalizedMessage(1073621); // Your reward has been placed in your backpack.
+        pm.PlaySound(0x5A7);
+
+        CleanUpBritanniaRewardGump.DisplayTo(pm, _owner);
     }
 
     public override void Refuse(Mobile from)

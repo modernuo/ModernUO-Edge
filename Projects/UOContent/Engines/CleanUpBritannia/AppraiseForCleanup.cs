@@ -6,7 +6,7 @@ namespace Server.Engines.CleanUpBritannia;
 
 public class AppraiseForCleanupEntry : ContextMenuEntry
 {
-    public AppraiseForCleanupEntry(Mobile from) : base(1151298, 2) // Appraise for Cleanup
+    public AppraiseForCleanupEntry() : base(1151298, 2) // Appraise for Cleanup
     {
     }
 

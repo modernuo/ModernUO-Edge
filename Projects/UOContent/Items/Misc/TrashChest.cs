@@ -24,7 +24,7 @@ public partial class TrashChest : Container
 
         if (CleanUpBritanniaData.Enabled && from is PlayerMobile)
         {
-            list.Add(new AppraiseForCleanupEntry(from));
+            list.Add(new AppraiseForCleanupEntry());
         }
     }
 
