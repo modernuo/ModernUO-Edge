@@ -1,0 +1,22 @@
+{
+  "version": 0,
+  "type": "Server.Mobiles.CovetousCreature",
+  "properties": [
+    {
+      "name": "Level",
+      "type": "int",
+      "rule": "PrimitiveTypeMigrationRule",
+      "ruleArguments": [
+        ""
+      ]
+    },
+    {
+      "name": "VoidSpawn",
+      "type": "bool",
+      "rule": "PrimitiveTypeMigrationRule",
+      "ruleArguments": [
+        ""
+      ]
+    }
+  ]
+}
