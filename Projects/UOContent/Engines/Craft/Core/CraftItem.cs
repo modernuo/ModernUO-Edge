@@ -157,6 +157,10 @@ namespace Server.Engines.Craft
 
         public Expansion RequiredExpansion { get; set; }
 
+        // -1 disables; when >= 0, GetSuccessChance returns this flat percentage (as a 0-1 fraction)
+        // instead of the skill-based calculation, once the required skills are met.
+        public int ForceSuccessChance { get; set; } = -1;
+
         public Recipe Recipe { get; private set; }
 
         public BeverageType RequiredBeverage { get; set; }
@@ -897,6 +901,12 @@ namespace Server.Engines.Craft
             if (!allRequiredSkills)
             {
                 return 0;
+            }
+
+            // Forced success overrides the skill-based chance (matches ServUO SetForceSuccess).
+            if (ForceSuccessChance > -1)
+            {
+                return ForceSuccessChance / 100.0;
             }
 
             var minChance = craftSystem.GetChanceAtMin(this);

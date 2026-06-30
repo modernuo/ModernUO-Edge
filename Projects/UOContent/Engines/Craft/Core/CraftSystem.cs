@@ -263,6 +263,11 @@ namespace Server.Engines.Craft
             CraftItems[index].RequiredExpansion = expansion;
         }
 
+        public void SetForceSuccess(int index, int success)
+        {
+            CraftItems[index].ForceSuccessChance = success;
+        }
+
         public void AddRes(int index, Type type, TextDefinition name, int amount, TextDefinition message)
         {
             CraftItems[index].AddRes(type, name, amount, message);
