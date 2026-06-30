@@ -98,10 +98,11 @@ public class DefCartography : CraftSystem
         AddCraft(typeof(SeaChart), 1044448, 1015232, 35.0, 95.0, typeof(BlankMap), 1044449, 1, 1044450);
         AddCraft(typeof(WorldMap), 1044448, 1015233, 39.5, 99.5, typeof(BlankMap), 1044449, 1, 1044450);
 
-        // Source: ServUO Scripts/Services/Craft/DefCartography.cs:104
-        // ServUO used SetForceSuccess(index, 75) which Edge's CraftItem does not support; the 0.0/60.0
-        // skill range provides natural skill-based success instead. StarChart is freely craftable —
-        // recipe 465 belongs to PersonalTelescope (Tinkering), taught by Willebrord's RecipeScroll(465).
-        AddCraft(typeof(StarChart), 1044448, 1158493, 0.0, 60.0, typeof(BlankMap), 1044449, 1, 1044450);
+        // Source: ServUO Scripts/Services/Craft/DefCartography.cs:104-105
+        // Flat 75% success regardless of skill (the 0.0/60.0 range only gates that you have any
+        // Cartography). StarChart is freely craftable — recipe 465 belongs to PersonalTelescope
+        // (Tinkering), taught by Willebrord's RecipeScroll(465).
+        var index = AddCraft(typeof(StarChart), 1044448, 1158493, 0.0, 60.0, typeof(BlankMap), 1044449, 1, 1044450);
+        SetForceSuccess(index, 75);
     }
 }
