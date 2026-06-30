@@ -1,0 +1,50 @@
+{
+  "version": 0,
+  "type": "Server.Engines.VoidPool.VoidPoolController",
+  "properties": [
+    {
+      "name": "RespawnMin",
+      "type": "int",
+      "rule": "PrimitiveTypeMigrationRule",
+      "ruleArguments": [
+        ""
+      ]
+    },
+    {
+      "name": "RespawnMax",
+      "type": "int",
+      "rule": "PrimitiveTypeMigrationRule",
+      "ruleArguments": [
+        ""
+      ]
+    },
+    {
+      "name": "ActiveState",
+      "type": "bool",
+      "rule": "PrimitiveTypeMigrationRule",
+      "ruleArguments": [
+        ""
+      ]
+    },
+    {
+      "name": "WaypointsA",
+      "type": "System.Collections.Generic.List\u003CServer.Items.WayPoint\u003E",
+      "rule": "ListMigrationRule",
+      "ruleArguments": [
+        "@Tidy",
+        "Server.Items.WayPoint",
+        "SerializableInterfaceMigrationRule"
+      ]
+    },
+    {
+      "name": "WaypointsB",
+      "type": "System.Collections.Generic.List\u003CServer.Items.WayPoint\u003E",
+      "rule": "ListMigrationRule",
+      "ruleArguments": [
+        "@Tidy",
+        "Server.Items.WayPoint",
+        "SerializableInterfaceMigrationRule"
+      ]
+    }
+  ]
+}
