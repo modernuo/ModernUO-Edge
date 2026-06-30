@@ -85,6 +85,14 @@ public class VoidPoolTests : IClassFixture<VoidPoolFixture>, IDisposable
     }
 
     [Fact]
+    public void AwardPoints_FromScore_AccumulatesBalance()
+    {
+        var pm = NewPlayer(0x30200);
+        _sys.AwardPoints(pm, 17, false, false);
+        Assert.Equal(17, _sys.GetPoints(pm));
+    }
+
+    [Fact]
     public void Award_Persists_RoundTrip()
     {
         var pm = NewPlayer(0x30100);
