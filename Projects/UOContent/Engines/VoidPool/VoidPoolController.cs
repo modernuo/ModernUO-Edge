@@ -222,27 +222,24 @@ public partial class VoidPoolController : Item
                 SpawnWave();
             }
 
+            using var targets = PooledRefQueue<BaseCreature>.Create();
+
             foreach (var bc in Map.GetMobilesInRange<BaseCreature>(PoolCenter, 7))
+            {
+                if (!bc.Controlled && !bc.Summoned && PoolWalls.Contains(bc.Location) && Utility.RandomDouble() > 0.25)
+                {
+                    targets.Enqueue(bc);
+                }
+            }
+
+            while (targets.Count > 0)
             {
                 if (!OnGoing)
                 {
                     break;
                 }
 
-                if (bc.Controlled || bc.Summoned)
-                {
-                    continue;
-                }
-
-                if (!PoolWalls.Contains(bc.Location))
-                {
-                    continue;
-                }
-
-                if (Utility.RandomDouble() > 0.25)
-                {
-                    OnVoidWallDamaged(bc);
-                }
+                OnVoidWallDamaged(targets.Dequeue());
             }
         }
     }
