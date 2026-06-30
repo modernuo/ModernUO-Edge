@@ -186,6 +186,11 @@ public partial class VoidPoolController : Item
 
     private void OnTick()
     {
+        if (Map == null)
+        {
+            return;
+        }
+
         if (!OnGoing && DateTime.UtcNow > NextStart && Region != null && Region.GetPlayerCount() > 0)
         {
             NextStart = DateTime.MaxValue;
@@ -215,11 +220,6 @@ public partial class VoidPoolController : Item
             if (DateTime.UtcNow > NextWave)
             {
                 SpawnWave();
-            }
-
-            if (Map == null)
-            {
-                return;
             }
 
             foreach (var bc in Map.GetMobilesInRange<BaseCreature>(PoolCenter, 7))
