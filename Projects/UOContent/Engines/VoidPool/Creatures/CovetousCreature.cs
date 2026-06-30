@@ -57,15 +57,18 @@ public abstract partial class CovetousCreature : BaseCreature
     public override bool PlayerRangeSensitive => false;
     public override bool CanDestroyObstacles => true;
 
-    private WayPoint _timeOnWayPointWayPoint;
-    private DateTime _timeOnWayPointExpiry;
+    private WayPoint _stuckWayPoint;
+    private DateTime _stuckExpiry;
 
     protected CovetousCreature(AIType ai, int level = 60, bool voidSpawn = false)
         : base(ai, FightMode.Closest, 10, 1)
     {
         _level = level;
         _voidSpawn = voidSpawn;
-        NoKillAwards = true;
+        // Void spawns suppress all kill awards (no loot, no fame/karma) — they are wave-event creatures.
+        // Non-void (GM/spawner-placed) creatures retain loot + fame. Edge has no fame-only hook equivalent
+        // to ServUO's GivesFameAndKarmaAward, so this is a minor documented divergence for non-void spawns.
+        NoKillAwards = voidSpawn;
 
         SetSkill(SkillName.MagicResist, SkillStart);
         SetSkill(SkillName.Tactics, SkillStart);
@@ -119,22 +122,22 @@ public abstract partial class CovetousCreature : BaseCreature
             return;
         }
 
-        if (_timeOnWayPointWayPoint == null && CurrentWayPoint != null)
+        if (_stuckWayPoint == null && CurrentWayPoint != null)
         {
-            _timeOnWayPointWayPoint = CurrentWayPoint;
-            _timeOnWayPointExpiry = DateTime.UtcNow + TimeSpan.FromMinutes(2);
+            _stuckWayPoint = CurrentWayPoint;
+            _stuckExpiry = DateTime.UtcNow + TimeSpan.FromMinutes(2);
         }
-        else if (_timeOnWayPointWayPoint != null && _timeOnWayPointWayPoint == CurrentWayPoint && _timeOnWayPointExpiry < DateTime.UtcNow)
+        else if (_stuckWayPoint != null && _stuckWayPoint == CurrentWayPoint && _stuckExpiry < DateTime.UtcNow)
         {
             if (CheckCanTeleport())
             {
                 MoveToWorld(CurrentWayPoint.Location, Map);
             }
         }
-        else if (_timeOnWayPointWayPoint != null && _timeOnWayPointWayPoint != CurrentWayPoint)
+        else if (_stuckWayPoint != null && _stuckWayPoint != CurrentWayPoint)
         {
-            _timeOnWayPointWayPoint = CurrentWayPoint;
-            _timeOnWayPointExpiry = DateTime.UtcNow + TimeSpan.FromMinutes(2);
+            _stuckWayPoint = CurrentWayPoint;
+            _stuckExpiry = DateTime.UtcNow + TimeSpan.FromMinutes(2);
         }
     }
 
