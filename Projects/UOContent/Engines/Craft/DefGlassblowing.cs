@@ -123,5 +123,13 @@ public class DefGlassblowing : CraftSystem
             index = AddCraft(typeof(HollowPrism), 1044050, 1072895, 100.0, 150.0, typeof(Sand), 1044625, 8, 1044627);
             SetNeededExpansion(index, Expansion.ML);
         }
+
+        // Source: ServUO DefGlassblowing.cs (SA glassblowing). WorkableGlass is the SA-era resource
+        // consumed by the PersonalTelescope tinkering recipe (see DefTinkering).
+        if (Core.SA)
+        {
+            index = AddCraft(typeof(WorkableGlass), 1044050, 1154170, 55.0, 105.0, typeof(Sand), 1044625, 10, 1044627);
+            SetNeededExpansion(index, Expansion.SA);
+        }
     }
 }
